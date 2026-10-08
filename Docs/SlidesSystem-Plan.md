@@ -428,7 +428,7 @@ Via MCP: `run_tests({mode:"EditMode", filter:"SlideCursorTests"})` → Expected:
 
 ## Task 4: `SlideDeckPlayer` + `SlideView` (TMP rendering)
 
-**Files:** create `Assets/Scripts/Slides/SlideDeckPlayer.cs`, `SlideView.cs`
+**Files:** create `Assets/Scripts/Slides/SlideDeckPlayer.cs`, `SlideView.cs`, `Assets/Tests/EditMode/DeckLoadTests.cs`; **move** `Assets/Scripts/Slides/SlideData.cs` → `Assets/Scripts/Slides/Core/SlideData.cs`
 
 **Interfaces — consumes:** Task 3's types. **Produces:**
 
@@ -454,7 +454,70 @@ public class SlideView : MonoBehaviour {
 - `kind == "code"` → `<mark=#1E2430><color=#8FD9A8>  text  </color></mark>`
 - `kind == "blank"` → an empty line
 
-- [ ] **Step 1: Implement `SlideDeckPlayer`**
+- [ ] **Step 1: Move `SlideData.cs` into `Slides.Core`**
+
+A test assembly cannot see the predefined `Assembly-CSharp`, and the deserialisation contract is the highest-risk part of the whole pipeline — a field-name typo renders blank slides. The data classes use only `System` types, so they belong in the engine-free assembly (which also makes the real deck testable).
+
+```bash
+git mv Assets/Scripts/Slides/SlideData.cs      Assets/Scripts/Slides/Core/SlideData.cs
+git mv Assets/Scripts/Slides/SlideData.cs.meta Assets/Scripts/Slides/Core/SlideData.cs.meta
+```
+
+- [ ] **Step 2: Write the deck-load contract test**
+
+It parses the **real** `Assets/Slides/W04_L4.json` through `JsonUtility` and asserts the C# schema actually matches the artefact. This is a **contract test, not TDD** — if it fails, `SlideData.cs` is wrong, not the test.
+
+```csharp
+// Assets/Tests/EditMode/DeckLoadTests.cs
+using NUnit.Framework; using UnityEditor; using UnityEngine;
+public class DeckLoadTests
+{
+    static SlideDeckData Load()
+    {
+        var ta = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Slides/W04_L4.json");
+        Assert.IsNotNull(ta, "Assets/Slides/W04_L4.json is missing");
+        var deck = JsonUtility.FromJson<SlideDeckData>(ta.text);
+        Assert.IsNotNull(deck, "the deck JSON did not deserialise");
+        return deck;
+    }
+
+    [Test] public void ParsesTheRealW04Deck()
+    {
+        var d = Load();
+        Assert.AreEqual("W04_L4", d.key);
+        Assert.AreEqual("Animations and Camera", d.title);
+        Assert.AreEqual("Lecture 4", d.subtitle);
+        Assert.AreEqual(28, d.slides.Length);
+    }
+
+    [Test] public void SlideIndexesAreOneBasedAndContiguous()
+    {
+        var d = Load();
+        for (int i = 0; i < d.slides.Length; i++) Assert.AreEqual(i + 1, d.slides[i].index);
+    }
+
+    [Test] public void TitleSlidesCarryTheSubtitleAndNoBlocks()
+    {
+        var d = Load();
+        foreach (var s in new[] { d.slides[0], d.slides[27] })
+        {
+            Assert.AreEqual("title", s.layout);
+            Assert.AreEqual("Lecture 4", s.subtitle);
+            Assert.AreEqual(0, s.blocks.Length);
+        }
+    }
+
+    [Test] public void CodeBlocksSurviveDeserialisation()
+    {
+        var d = Load();
+        int code = 0;
+        foreach (var s in d.slides) foreach (var b in s.blocks) if (b.kind == "code") code++;
+        Assert.AreEqual(4, code, "expected the 4 animator.* code blocks");
+    }
+}
+```
+
+- [ ] **Step 3: Implement `SlideDeckPlayer`**
 
 ```csharp
 using System; using UnityEngine;
@@ -486,7 +549,7 @@ public class SlideDeckPlayer : MonoBehaviour
 }
 ```
 
-- [ ] **Step 2: Implement `SlideView`**
+- [ ] **Step 4: Implement `SlideView`**
 
 ```csharp
 using System.Text; using TMPro; using UnityEngine;
@@ -544,11 +607,11 @@ public class SlideView : MonoBehaviour
 }
 ```
 
-- [ ] **Step 3: Verify it compiles**
+- [ ] **Step 5: Verify it compiles and the EditMode tests pass**
 
-Via MCP `refresh_unity({mode:"force",compile:"request"})` then `read_console({types:["error"]})` → Expected: 0 errors.
+Via MCP: `refresh_unity({mode:"force",compile:"request",wait_for_ready:true})`, then `read_console({types:["error"],count:40,format:"plain"})` → 0 errors; then run the EditMode suite (`SlideCursorTests` + `DeckLoadTests`) → **11 passed, 0 failed**.
 
-- [ ] **Step 4: Checkpoint.**
+- [ ] **Step 6: Commit** — `git add -A && git commit -m "feat(slides): deck player + TMP slide view + deck-load contract test"`
 
 ---
 
