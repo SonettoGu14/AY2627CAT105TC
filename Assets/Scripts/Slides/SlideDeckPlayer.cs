@@ -12,7 +12,8 @@ public class SlideDeckPlayer : MonoBehaviour
     public void Reload()
     {
         if (deckJson == null) { Debug.LogError("[Slides] no deck JSON assigned"); return; }
-        Deck = JsonUtility.FromJson<SlideDeckData>(deckJson.text);
+        try { Deck = JsonUtility.FromJson<SlideDeckData>(deckJson.text); }
+        catch (Exception) { Debug.LogError("[Slides] deck JSON did not parse: " + deckJson.name); return; }
         if (Deck == null || Deck.slides == null) { Debug.LogError("[Slides] deck JSON did not parse"); return; }
         var counts = new int[Deck.slides.Length];
         for (int i = 0; i < counts.Length; i++) counts[i] = Deck.slides[i].blocks?.Length ?? 0;
