@@ -104,17 +104,33 @@ public static class CharacterRig
         // --- clips the Animation demos point at ---
         AnimationClip keyframes = NewDemoClip();
         SetFloatCurve(keyframes, "", typeof(Transform), "m_LocalPosition.y", new[] { 0f, 0.5f, 1f }, new[] { 0f, 1.2f, 0f });
-        FinishDemoClip(keyframes, "Demo_Keyframes", true);
 
         AnimationClip channels = NewDemoClip();
         SetFloatCurve(channels, "", typeof(Transform), "m_LocalPosition.y", new[] { 0f, 0.5f, 1f }, new[] { 0f, 0.9f, 0f });
         SetFloatCurve(channels, "", typeof(SpriteRenderer), "m_Color.r", new[] { 0f, 0.5f, 1f }, new[] { 1f, 0.25f, 1f });
         SetFloatCurve(channels, "", typeof(AnimationDemo), "animValue", new[] { 0f, 0.5f, 1f }, new[] { 0f, 8f, 0f });
-        FinishDemoClip(channels, "Demo_Channels", true);
 
         AnimationClip priority = NewDemoClip();
         SetFloatCurve(priority, "", typeof(Transform), "m_LocalPosition.x", new[] { 0f, 0.5f, 1f }, new[] { -2f, 2f, -2f });
-        FinishDemoClip(priority, "Demo_Priority", true);
+
+        AnimationClip kf = FinishDemoClip(keyframes, "Demo_Keyframes", true);
+        AnimationClip ch = FinishDemoClip(channels, "Demo_Channels", true);
+        AnimationClip pr = FinishDemoClip(priority, "Demo_Priority", true);
+
+        BuildSingleStateController("DemoKeyframes", kf, "Keyframes");
+        BuildSingleStateController("DemoChannels", ch, "Channels");
+        BuildSingleStateController("DemoPriority", pr, "Priority");
+    }
+
+    /// <summary>A controller holding one looping state, for the demos whose point is a single clip.</summary>
+    private static void BuildSingleStateController(string name, AnimationClip clip, string stateName)
+    {
+        string path = AnimFolder + "/" + name + ".controller";
+        AssetDatabase.DeleteAsset(path);
+        AnimatorController ctrl = AnimatorController.CreateAnimatorControllerAtPath(path);
+        AnimatorState state = ctrl.layers[0].stateMachine.AddState(stateName);
+        state.motion = clip;
+        ctrl.layers[0].stateMachine.defaultState = state;
     }
 
     private static AnimationClip NewDemoClip()

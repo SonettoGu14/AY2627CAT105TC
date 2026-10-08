@@ -177,22 +177,27 @@ public static class SlideDeckBuilder
     private static DemoReadout BuildDemoReadout(Transform chrome, DemoStage stage, SlidePresenter presenter)
     {
         RectTransform panelRect = UiPanelRect(chrome, "DemoReadout", BottomLeft, BottomLeft,
-            new Vector2(28f, 28f), new Vector2(780f, 360f));
+            new Vector2(28f, 28f), new Vector2(880f, 380f));
         Image bg = panelRect.gameObject.AddComponent<Image>();
         bg.sprite = LabKit.White;
         bg.color = new Color32(0x0A, 0x0F, 0x18, 0xE6);
         bg.raycastTarget = false;
 
-        TMP_Text title = TmpText(panelRect, "Title", TopLeft, new Vector2(24f, -18f), new Vector2(620f, 40f),
-            26f, AccentColor, TextAlignmentOptions.TopLeft);
-        TMP_Text index = TmpText(panelRect, "Index", new Vector2(1f, 1f), new Vector2(-24f, -20f), new Vector2(320f, 30f),
-            20f, MutedColor, TextAlignmentOptions.TopRight);
-        TMP_Text body = TmpText(panelRect, "Body", TopLeft, new Vector2(24f, -66f), new Vector2(732f, 240f),
+        TMP_Text title = TmpText(panelRect, "Title", TopLeft, new Vector2(24f, -16f), new Vector2(560f, 48f),
+            24f, AccentColor, TextAlignmentOptions.TopLeft);
+        title.enableAutoSizing = true;          // long titles shrink instead of running under the counter
+        title.fontSizeMin = 15f;
+        title.fontSizeMax = 24f;
+        TMP_Text index = TmpText(panelRect, "Index", new Vector2(1f, 1f), new Vector2(-24f, -18f), new Vector2(260f, 30f),
+            17f, MutedColor, TextAlignmentOptions.TopRight);
+        TMP_Text body = TmpText(panelRect, "Body", TopLeft, new Vector2(24f, -74f), new Vector2(832f, 252f),
             21f, BodyColor, TextAlignmentOptions.TopLeft);
-        TMP_Text keys = TmpText(panelRect, "Keys", new Vector2(0f, 0f), new Vector2(24f, 16f), new Vector2(732f, 40f),
+        TMP_Text keys = TmpText(panelRect, "Keys", new Vector2(0f, 0f), new Vector2(24f, 14f), new Vector2(832f, 40f),
             20f, new Color32(0x7C, 0xE3, 0x8B, 0xFF), TextAlignmentOptions.BottomLeft);
 
-        DemoReadout readout = panelRect.gameObject.AddComponent<DemoReadout>();
+        // The readout component must live on an ACTIVE object: a component sitting on an inactive
+        // GameObject never runs Update, so it could never switch its own panel on.
+        DemoReadout readout = chrome.gameObject.AddComponent<DemoReadout>();
         readout.stage = stage;
         readout.presenter = presenter;
         readout.panel = panelRect.gameObject;

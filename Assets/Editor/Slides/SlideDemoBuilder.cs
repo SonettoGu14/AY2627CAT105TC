@@ -121,12 +121,12 @@ public static class SlideDemoBuilder
         s.Add(S(new Spec { key = "sp_swap", build = t => BuildSpriteFrames(t, SpriteDemo.Mode.Swap) }));
 
         // ---------------- slides 11-14: animation ----------------
-        s.Add(S(new Spec { key = "an_clip", build = t => BuildAnimation(t, AnimationDemo.Mode.Clip, "DemoStates") }));
-        s.Add(S(new Spec { key = "an_animator", build = t => BuildAnimation(t, AnimationDemo.Mode.AnimatorComponent, "DemoStates") }));
-        s.Add(S(new Spec { key = "an_keyframes", build = t => BuildAnimation(t, AnimationDemo.Mode.Keyframes, "DemoKeyframes") }));
-        s.Add(S(new Spec { key = "an_channels", build = t => BuildAnimation(t, AnimationDemo.Mode.Channels, "DemoChannels") }));
-        s.Add(S(new Spec { key = "an_oneatatime", build = t => BuildAnimation(t, AnimationDemo.Mode.OneAtATime, "DemoStates") }));
-        s.Add(S(new Spec { key = "an_priority", build = t => BuildAnimation(t, AnimationDemo.Mode.Priority, "DemoPriority") }));
+        s.Add(S(new Spec { key = "an_clip", build = t => BuildAnimation(t, AnimationDemo.Mode.Clip, "DemoStates", "A", "B") }));
+        s.Add(S(new Spec { key = "an_animator", build = t => BuildAnimation(t, AnimationDemo.Mode.AnimatorComponent, "DemoStates", "A", "B") }));
+        s.Add(S(new Spec { key = "an_keyframes", build = t => BuildAnimation(t, AnimationDemo.Mode.Keyframes, "DemoKeyframes", "Keyframes", "") }));
+        s.Add(S(new Spec { key = "an_channels", build = t => BuildAnimation(t, AnimationDemo.Mode.Channels, "DemoChannels", "Channels", "") }));
+        s.Add(S(new Spec { key = "an_oneatatime", build = t => BuildAnimation(t, AnimationDemo.Mode.OneAtATime, "DemoStates", "A", "B") }));
+        s.Add(S(new Spec { key = "an_priority", build = t => BuildAnimation(t, AnimationDemo.Mode.Priority, "DemoPriority", "Priority", "") }));
 
         // ---------------- slides 15-21: the Animator ----------------
         s.Add(S(new Spec { key = "am_basics", build = t => BuildAnimator(t, AnimatorDemo.Mode.Basics) }));
@@ -168,6 +168,7 @@ public static class SlideDemoBuilder
             Camera labCam;
             W04LabBuilder.BuildGameplay(t, out labPlayer, out labCam);
             p.produced = labCam;
+            t.gameObject.AddComponent<PlatformerDemo>();   // so the readout panel has something to show
         };
         return p;
     }
@@ -355,7 +356,7 @@ public static class SlideDemoBuilder
     }
 
     // ---------------- animation ----------------
-    private static void BuildAnimation(Transform t, AnimationDemo.Mode mode, string controllerName)
+    private static void BuildAnimation(Transform t, AnimationDemo.Mode mode, string controllerName, string stateA, string stateB)
     {
         GameObject go = Visual(t, "Animated", LabKit.CharacterSprite("idle"), Color.white, new Vector2(0f, -0.8f), Vector2.one * 2f, 3);
         Animator animator = go.AddComponent<Animator>();
@@ -372,8 +373,8 @@ public static class SlideDemoBuilder
         demo.animator = animator;
         demo.target = go.transform;
         demo.sprite = go.GetComponent<SpriteRenderer>();
-        demo.stateA = controllerName == "DemoStates" ? "A" : "Wait";
-        demo.stateB = controllerName == "DemoStates" ? "B" : "Done";
+        demo.stateA = stateA;
+        demo.stateB = stateB;
         demo.keyTimes = new[] { 0f, 0.5f, 1f };
         demo.keyLabels = new[] { "start", "peak", "back" };
         AnimationClip clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(ClipPath(controllerName));
@@ -498,8 +499,7 @@ public static class SlideDemoBuilder
     {
         string path = "Assets/Animations/W04_AnimationCamera/" + name + ".controller";
         if (AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(path) == null)
-            Debug.LogWarning("[SlideDemoBuilder] missing animator controller " + path +
-                             " - run CAT105TC > W04 Animation & Camera > Build W4 Lab first");
+            Debug.LogWarning("[SlideDemoBuilder] missing animator controller " + path);
         return path;
     }
 
