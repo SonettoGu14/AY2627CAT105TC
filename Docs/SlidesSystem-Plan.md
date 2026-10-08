@@ -271,7 +271,7 @@ Expected: `"key": "W04_L4"`, `slides[0].layout == "title"`, non-empty `blocks` o
 
 ## Task 3: Data classes + pure `SlideCursor` + unit tests
 
-**Files:** create `Assets/Scripts/Slides/SlideData.cs`, `SlideCursor.cs`, `Assets/Tests/EditMode/Slides.EditMode.asmdef`, `Assets/Tests/EditMode/SlideCursorTests.cs`
+**Files:** create `Assets/Scripts/Slides/SlideData.cs` (stays in `Assembly-CSharp`), `Assets/Scripts/Slides/Core/SlideCursor.cs` + `Assets/Scripts/Slides/Core/Slides.Core.asmdef`, `Assets/Tests/EditMode/Slides.EditMode.asmdef`, `Assets/Tests/EditMode/SlideCursorTests.cs`
 
 **Interfaces — produces:**
 
@@ -344,12 +344,26 @@ public class SlideCursorTests
 }
 ```
 
-- [ ] **Step 2: Create the test assembly so the tests can compile**
+- [ ] **Step 2: Create the two assemblies so the tests can compile**
+
+`SlideCursor` must live in its **own assembly**: a test asmdef **cannot** reference the predefined `Assembly-CSharp`. `Slides.Core` declares no engine references because `SlideCursor` is pure C# — keep it that way (no `UnityEngine` types in that file).
 
 ```jsonc
+// Assets/Scripts/Slides/Core/Slides.Core.asmdef
+{ "name": "Slides.Core", "references": [], "noEngineReferences": true }
+
 // Assets/Tests/EditMode/Slides.EditMode.asmdef
-{ "name": "Slides.EditMode", "references": ["UnityEngine.TestRunner","UnityEditor.TestRunner"],
-  "includePlatforms": ["Editor"], "optionalUnityReferences": ["TestAssemblies"] }
+// Unity 2022 form — do NOT use the old "optionalUnityReferences": ["TestAssemblies"]
+{
+  "name": "Slides.EditMode",
+  "references": ["Slides.Core", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
+  "includePlatforms": ["Editor"],
+  "overrideReferences": true,
+  "precompiledReferences": ["nunit.framework.dll"],
+  "autoReferenced": false,
+  "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+  "noEngineReferences": false
+}
 ```
 
 - [ ] **Step 3: Run the tests, expect failure**
