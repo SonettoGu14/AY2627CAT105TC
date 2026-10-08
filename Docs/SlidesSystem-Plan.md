@@ -20,6 +20,7 @@
 - Git: the project is now a repository, branch `feature/slides-system`. **Commit after every task** (`feat(slides): …` / `test(slides): …`).
 - Verification uses the Unity MCP tools (`execute_code`, `manage_scene`, `read_console`, `manage_editor`, `execute_menu_item`) through `execute`, and shell for the Python side.
 - **Unity MCP gotchas that will bite you:** `execute_code` refuses file-deleting code unless you pass `safety_checks:false`; play mode is throttled while the Unity Editor is unfocused, so call `Application.runInBackground = true` from `execute_code` right after entering play; `execute_code` bodies have **no `using` directives** (fully-qualify every type) and compile as C# 6.
+- **Screenshot evidence must be verified, not assumed.** `manage_camera` can hand back a frame captured in the same editor tick as your change, before uGUI repaints — that produced a screenshot with the UI simply missing and cost a whole review round. Capture asynchronously, wait for the result and a state change, then **read the PNG and confirm the pixels actually contain what you claim**. Never describe a screenshot you have not looked at. Also assert `SceneManager.GetActiveScene().path` before capturing: the editor may be driven externally.
 
 ---
 
