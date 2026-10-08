@@ -1,12 +1,90 @@
-# CAT105TC — script layout
+# CAT105TC — project conventions
 
-The project accumulates one lab per week, so **code is split by week**, and only genuinely
+The project accumulates one week at a time, so **code is split by week**, and only genuinely
 week-independent infrastructure is shared.
+
+## Scene types
+
+A week can produce **two scenes**, and they have different jobs. Both are normal scenes in
+`Assets/Scenes/`, both go into Build Settings, and both are **generated from code** — never
+hand-edited (the builders rebuild them from scratch).
+
+### 1. Lab Playground — `Assets/Scenes/WnnLab.unity`
+
+**What it is.** The week's hands-on scene: what the students build in the lab and what they run
+during the session. A small 2D scene with the week's topics laid out as labelled stations, the
+shared `LabHud`, and (in review weeks) a checklist.
+
+**Built by.** `Assets/Editor/Wnn_Topic/WnnLabBuilder.cs` →
+`CAT105TC ▸ Wnn … ▸ Build Wnn Lab`.
+
+**Scope — the hard rule.** A lab contains **only what has been taught by that week**. That is why
+`W3Lab`'s player has no `Animator` (animation is W4 material), and why `W4Lab`'s builder calls
+`W03LabBuilder.CreatePlayer(...)` and then adds the Animator itself. A later week may reuse an
+earlier week's components; an earlier week must never reach forward.
+
+**Existing.** `W2Lab` (hand-made; the 3D leftovers), `W3Lab`, `W4Lab`.
+
+### 2. Slides — `Assets/Scenes/WnnSlides.unity`
+
+**What it is.** The lecture delivery scene: the deck at 1920×1080, and behind **each slide** a live
+demonstration of *that slide's own content*. It exists so a lecture can be given from inside Unity,
+with no window switching, and so every claim on a slide can be shown running.
+
+**Built by.** `Assets/Editor/Slides/SlideDeckBuilder.cs` (+ `SlideDemoBuilder.cs`), from
+`Assets/Slides/<deck>.json` and the per-slide demo map `Assets/Slides/<deck>.demos.json` →
+`CAT105TC ▸ Slides ▸ Build WnnSlides`.
+
+**How it is used.** `Tab` (or the top-right button) hides the slides and reveals the current slide's
+demo(s) together with a readout panel (title / live values / the API call / key hint / "demo 2 / 3").
+`,` and `.` move between a slide's demos, a digit jumps straight to one, and `Tab` returns to the
+same slide and the same revealed step. While the slides are up the demo roots are **deactivated** —
+which is also what makes the game's input inert, because `Time.timeScale = 0` does **not** stop
+`Update()`.
+
+**Scope.**
+* A demo teaches **exactly one thing** — split by knowledge point. Never a composite demo: if a
+  slide teaches four things, it gets four demos.
+* The Slides scene is **presentation, not a replacement for the lab.** The lab's own scene may
+  appear as **one** demo on the "put it together" slide (`platformer` on slide 22 is exactly that).
+  That is the only place the lab belongs in a deck.
+* Slides with nothing runnable — cover, agenda, an editor-UI walkthrough, "The End" — have **no**
+  demo. That is expected, not an omission.
+* Content comes from the `.pptx`. To change words, edit the deck or the generated JSON and rebuild;
+  never edit the scene.
+
+**Existing.** `W04Slides`.
+
+### The relationship
+
+| | Lab Playground | Slides |
+|---|---|---|
+| audience | students, hands-on | instructor, presenting |
+| content | the week's topics as stations | one demo per knowledge point |
+| scene | self-contained | embeds the lab as the "put it together" demo |
+| scope rule | only what has been taught | only what that slide teaches |
+| shared | `LabKit`, `LabHud`, the art, the character rig | the whole `Slides/` runtime + demo families |
 
 ```
 Assets/Scripts/
   Common/                     infrastructure used by every week - NOT lecture material
     LabHud.cs                 status bar, live input visualiser, camera debug panel, checklist
+
+  Slides/                     the presentation system - shared across all weeks, NOT lecture material
+    Core/                       engine-free: SlideData (JSON shapes) + SlideCursor (state machine)
+    Slides.Runtime.asmdef       the runtime assembly, so the PlayMode tests can see these scripts
+    SlideDeckPlayer.cs          parses a deck, owns the cursor, raises Changed
+    SlideView.cs                renders one slide into five TMP fields
+    SlidePresenter.cs           shows/hides the deck; owns Time.timeScale; picks the slide's demo
+    SlideInput.cs               the key map (Tab / arrows / Space / G, and , . for demos)
+    SlideNavigator.cs           prev/next buttons, page label, jump-to-slide grid
+    DemoBase.cs                 one demo = one knowledge point + its live readout
+    DemoStage.cs                owns every demo's stage, its camera, and which one is live
+    DemoReadout.cs              the blackboard panel next to a demo
+    SlideDemoMap.cs             which demos belong to which slide (from <deck>.demos.json)
+    Demos/                      one class per demo family: SpriteRenderer, Sprite, FieldModifier,
+                                Raycast, Controller, Animation, Animator, Camera, Platformer
+    README.md                   keys, regeneration, tests, and how to add a week
 
   W02_VariablesConditionals/  Lecture 2  "C# Fundamentals (1): Variables and Conditionals"
     VariablesDemo.cs            the four core types (string / int / float / bool),
@@ -41,6 +119,10 @@ Assets/Scripts/
     GoalZone2D.cs               end-of-level trigger
     MovingPlatform2D.cs         kinematic platform moved by code
     PropertyAnimationDemo2D.cs  animator.Play(); position/scale/colour animation
+    W4PlayerController.cs       the student handout: a self-contained standard 2D controller
+                                (W3 physics + W4 animation, bilingual comments). Not used by a
+                                lab - it is the file students are given, so it references nothing
+                                from this project. Drives the Animator params `speed` / `isJumping`.
     SlideSnippets_W04.cs        the literal slide code
 ```
 
@@ -56,6 +138,11 @@ Assets/Editor/
   W04_AnimationCamera/
     W04LabBuilder.cs           builds W4Lab
     CharacterRig.cs            the character AnimationClips + AnimatorControllers
+  Slides/
+    TmpBootstrap.cs            imports TMP Essential Resources once (async-safe)
+    SlideDeckBuilder.cs        deck JSON -> a 1920x1080 scene (currently W04Slides)
+    SlideDemoBuilder.cs        builds the slide demos onto their own stages
+    DemoKit.cs                 the shared demo furniture: visuals, floors, lines, bars, cameras
 ```
 
 ## The rules
@@ -72,6 +159,16 @@ Assets/Editor/
    `CAT105TC ▸ Wnn ... ▸ Build`.
 6. Dependency direction: `Common` may reference any week; a week may reference **earlier**
    weeks only (W4 → W3 is fine, W3 → W4 is not).
+7. `Slides/` is presentation infrastructure, not lecture material. It may reference any week's
+   components (a deck scene embeds that week's lab as one of its demos); no week should reference
+   it. Its tests live in `Assets/Tests/EditMode/` (the `SlideCursor` state machine + the real deck's
+   deserialisation contract) and `Assets/Tests/PlayMode/` (the presenter ↔ demo contract). That is
+   why the runtime has its own `Slides.Runtime` assembly and the pure logic a separate engine-free
+   `Slides.Core` one — a test asmdef cannot see the predefined `Assembly-CSharp`.
+8. A week may produce **two scenes with different jobs** — a **Lab Playground** and a **Slides**
+   scene. See "Scene types" above. The lab is the students' scene and may use only what has been
+   taught; the Slides scene is the instructor's and may reuse any week's components. Neither is a
+   substitute for the other.
 
 ## Menu
 
@@ -80,7 +177,8 @@ Assets/Editor/
 | `CAT105TC ▸ Common ▸ Rebuild shared assets` | layers, tags, generated sprites, physics materials |
 | `CAT105TC ▸ W03 Physics2D ▸ Build W3 Lab` | rebuilds `Assets/Scenes/W3Lab.unity` |
 | `CAT105TC ▸ W04 Animation & Camera ▸ Build W4 Lab` | rebuilds `Assets/Scenes/W4Lab.unity` |
-| `CAT105TC ▸ Build all current labs` | the two above |
+| `CAT105TC ▸ Slides ▸ Build W04Slides` | rebuilds the W4 deck scene (needs `Assets/Slides/W04_L4.json`) |
+| `CAT105TC ▸ Build all current labs` | the two lab builders above |
 
 ## Assets
 
@@ -91,6 +189,9 @@ Assets/Editor/
 | `Assets/Animations/W04_AnimationCamera/` | W4 (the AnimationClips + AnimatorControllers) |
 | `Assets/Scenes/W2Lab.unity` | W2 - the legacy 3D player scene (was `PlayerTest.unity`), hand-made, not builder-generated |
 | `Assets/Scenes/W3Lab.unity`, `W4Lab.unity` | the 2D lab scenes, regenerated from `Editor/Wnn_.../` |
+| `Assets/Slides/<key>.json` | generated decks (source: the course `.pptx` files) |
+| `Assets/Scenes/W04Slides.unity` | the W4 deck scene — the slides, with the W4 game behind them |
+| `Assets/TextMesh Pro/` | TMP Essential Resources, committed (the deck scene references its font by GUID) |
 
 ## Adding W5
 
@@ -99,3 +200,13 @@ Assets/Editor/
    `[MenuItem("CAT105TC/W05 Topic/Build W5 Lab")]`.
 3. `Assets/Animations/W05_Topic/` (and `Assets/Scenes/W5Lab.unity`) if it needs its own.
 4. Reuse `LabKit` (scene helpers + HUD) and earlier weeks' components where the lecture does.
+5. The week's **Slides** scene, if the week is taught from a deck:
+   1. generate the deck JSON from the course `.pptx` — the converter is the lecturer's own tooling;
+   2. write `Assets/Slides/<deck>.demos.json`: one entry per slide, a comma-separated list of demo
+      keys (`""` = that slide shows nothing);
+   3. add the demos for that week's knowledge points. Reuse `DemoBase` / `DemoStage` /
+      `DemoReadout` / `SlideDemoMap` and the existing demo families; add a new demo family only for a
+      concept nothing here demonstrates yet;
+   4. add a `[MenuItem]` beside `BuildW04Slides` in `SlideDeckBuilder`, pointing at the new deck's
+      scene, and run it.
+   The walkthrough is in `Assets/Scripts/Slides/README.md`.

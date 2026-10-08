@@ -15,6 +15,22 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public static class W04LabBuilder
 {
+    // Coin layout. Kept at class scope so Build() can report the HUD total without
+    // widening BuildGameplay's signature.
+    private static readonly Vector3[] CoinPositions =
+    {
+        new Vector3(-8f, 0.2f, 0f),
+        new Vector3(-6f, 1.5f, 0f),
+        new Vector3(-1.5f, 0.3f, 0f),
+        new Vector3(3f, 2.2f, 0f),
+        new Vector3(7.5f, 3.6f, 0f),
+        new Vector3(13.5f, 0.3f, 0f)
+    };
+
+    // Annotation root from the most recent BuildGameplay call, so Build() can wire it
+    // into the HUD (the fixed signature cannot return it).
+    private static GameObject _annotations;
+
     [MenuItem("CAT105TC/W04 Animation & Camera/Build W4 Lab (Platformer)")]
     public static void BuildMenu()
     {
@@ -110,9 +126,43 @@ public static class W04LabBuilder
 
         Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
+        PlayerController2D player;
+        Camera cam;
+        BuildGameplay(null, out player, out cam);
+
+        // --- HUD -----------------------------------------------------------------------
+        LabHud hud;
+        LabKit.BuildHud("CAT105TC  W4 Lab  -  Animations & Camera", false, out hud);
+        hud.player = player;
+        hud.targetCamera = cam;
+        hud.annotationRoot = _annotations;
+        hud.totalCoins = CoinPositions.Length;
+        hud.help = "A / D  move      Space  jump\nS + Space  drop through the one-way platform\nP  replay property animation\nR  restart      T  labels      C  camera     H  hide help";
+
+        EditorSceneManager.SaveScene(scene, LabKit.W4ScenePath);
+        LabKit.AddSceneToBuildSettings(LabKit.W4ScenePath);
+        AssetDatabase.SaveAssets();
+        Debug.Log("[W04LabBuilder] W4Lab built.");
+    }
+
+    /// <summary>
+    /// Builds the W4 platformer - environment, player, coins, goal, follow camera and the
+    /// world-space teaching labels - under <paramref name="parent"/> (null = scene root).
+    /// No HUD: SlideDeckBuilder drops this behind the slide deck and supplies its own UI,
+    /// while Build() adds the lab HUD on top.
+    /// </summary>
+    public static void BuildGameplay(Transform parent, out PlayerController2D player, out Camera cam)
+    {
         GameObject env = new GameObject("Environment");
         GameObject gameplay = new GameObject("Gameplay");
         GameObject annotations = new GameObject("Annotations");
+        if (parent != null)
+        {
+            env.transform.SetParent(parent, false);
+            gameplay.transform.SetParent(parent, false);
+            annotations.transform.SetParent(parent, false);
+        }
+        _annotations = annotations;
         LabKit.MakeLight(null);
 
         // --- ground / platforms --------------------------------------------------------
@@ -132,7 +182,6 @@ public static class W04LabBuilder
         MakePropertyDemo(env.transform, new Vector3(-9f, 3.1f, 0f));
 
         // --- player: the W3 body, plus the W4 Animator --------------------------------
-        PlayerController2D player;
         GameObject playerGO = W03LabBuilder.CreatePlayer(gameplay.transform,
             new Vector3(-13f, -0.5f, 0f), new Vector3(-13f, -0.5f, 0f), out player);
 
@@ -143,22 +192,13 @@ public static class W04LabBuilder
         player.animator = animator;
 
         // --- coins ---------------------------------------------------------------------
-        Vector3[] coinPositions =
-        {
-            new Vector3(-8f, 0.2f, 0f),
-            new Vector3(-6f, 1.5f, 0f),
-            new Vector3(-1.5f, 0.3f, 0f),
-            new Vector3(3f, 2.2f, 0f),
-            new Vector3(7.5f, 3.6f, 0f),
-            new Vector3(13.5f, 0.3f, 0f)
-        };
-        for (int i = 0; i < coinPositions.Length; i++) MakeCoin(gameplay.transform, coinPositions[i]);
+        for (int i = 0; i < CoinPositions.Length; i++) MakeCoin(gameplay.transform, CoinPositions[i]);
 
         MakeGoal(gameplay.transform, new Vector3(16f, 0f, 0f));
         W03LabBuilder.MakeKillZone(gameplay.transform, new Vector3(2f, -9f, 0f), 80f, 2f, player);
 
         // --- camera (W4: orthographic + follow) ---------------------------------------
-        Camera cam = W03LabBuilder.MakeFollowCamera(null, new Vector3(-13f, 1f, -10f), 6f, player.transform);
+        cam = W03LabBuilder.MakeFollowCamera(null, new Vector3(-13f, 1f, -10f), 6f, player.transform);
 
         // --- teaching labels -----------------------------------------------------------
         LabKit.WorldLabel(annotations.transform, "Player\n(Rigidbody2D + Animator)", new Vector3(-13f, 1.3f, 0f), LabKit.Accent);
@@ -169,19 +209,5 @@ public static class W04LabBuilder
         LabKit.WorldLabel(annotations.transform, "Property animation\n(press P)", new Vector3(-9f, 4.2f, 0f), new Color(0.95f, 0.55f, 0.55f));
         LabKit.WorldLabel(annotations.transform, "Goal  (Is Trigger)", new Vector3(16f, 2.7f, 0f), new Color(0.98f, 0.5f, 0.55f));
         LabKit.WorldLabel(annotations.transform, "Kill zone  (Is Trigger)\nrespawns the player", new Vector3(2f, -7f, 0f), new Color(0.98f, 0.6f, 0.4f));
-
-        // --- HUD -----------------------------------------------------------------------
-        LabHud hud;
-        LabKit.BuildHud("CAT105TC  W4 Lab  -  Animations & Camera", false, out hud);
-        hud.player = player;
-        hud.targetCamera = cam;
-        hud.annotationRoot = annotations;
-        hud.totalCoins = coinPositions.Length;
-        hud.help = "A / D  move      Space  jump\nS + Space  drop through the one-way platform\nP  replay property animation\nR  restart      T  labels      C  camera     H  hide help";
-
-        EditorSceneManager.SaveScene(scene, LabKit.W4ScenePath);
-        LabKit.AddSceneToBuildSettings(LabKit.W4ScenePath);
-        AssetDatabase.SaveAssets();
-        Debug.Log("[W04LabBuilder] W4Lab built.");
     }
 }

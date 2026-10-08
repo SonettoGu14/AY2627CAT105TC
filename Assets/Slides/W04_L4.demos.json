@@ -1,0 +1,32 @@
+{
+  "perSlide": [
+    "",
+    "ctrl_move,ctrl_jump,ctrl_ground",
+    "rc_basic,rc_nocollider",
+    "rc_origin,rc_direction,rc_distance,rc_layermask",
+    "",
+    "fld_serialize,fld_hide,fld_range",
+    "sr_color,sr_flip,sr_sorting",
+    "sp_mask",
+    "sp_slice",
+    "sp_swap",
+    "an_clip,an_animator",
+    "an_keyframes,an_channels,an_oneatatime",
+    "",
+    "an_priority",
+    "am_basics",
+    "am_states,am_default",
+    "am_transitions,am_exittime,am_duration",
+    "am_vars",
+    "am_booltrigger",
+    "am_scripting",
+    "am_play",
+    "platformer",
+    "cam_projection,cam_fov",
+    "cam_ortho",
+    "cam_clearflags",
+    "cam_background,cam_culling,cam_depth",
+    "cam_follow,cam_follow_smooth",
+    ""
+  ]
+}

@@ -1,0 +1,35 @@
+# Unity: merge *scene/prefab/asset* files with UnityYAMLMerge so two people
+# editing different objects in one scene do not clobber each other.
+# Requires the merge tool to be configured once:
+#   git config merge.unityyamlmerge.name "Unity SmartMerge"
+#   git config merge.unityyamlmerge.driver 'path/to/UnityYAMLMerge merge -p %O %B %A %A'
+*.unity   merge=unityyamlmerge eol=lf
+*.prefab  merge=unityyamlmerge eol=lf
+
+# Unity YAML assets: text, LF, but do not try to diff them as prose.
+*.asset   text merge=unityyamlmerge eol=lf
+*.mat     text merge=unityyamlmerge eol=lf
+*.anim    text merge=unityyamlmerge eol=lf
+*.controller text merge=unityyamlmerge eol=lf
+*.meta    text eol=lf
+
+# Binary assets: never diff, never normalise.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.psd  binary
+*.ttf  binary
+*.otf  binary
+*.pdf  binary
+*.zip  binary
+*.fbx  binary
+*.wav  binary
+*.mp3  binary
+*.ogg  binary
+
+# C#, JSON and docs: normalise to LF so diffs stay clean across platforms.
+*.cs   text eol=lf
+*.json text eol=lf
+*.md   text eol=lf
+*.py   text eol=lf
+*.sh   text eol=lf

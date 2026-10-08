@@ -37,3 +37,13 @@ Thumbs.db
 .codegraph
 .omo/
 .superpowers/
+AGENTS.md
+
+# ---- local slide tooling (the lecturer's own; not published) ----
+/Docs/
+/tools/
+
+# ---- Python ----
+__pycache__/
+*.pyc
+.pytest_cache/

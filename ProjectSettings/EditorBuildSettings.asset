@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/W4Lab.unity
     guid: c0beb2a313baa484ba03c3444c32c520
+  - enabled: 1
+    path: Assets/Scenes/W04Slides.unity
+    guid: df2088241ff944c7b8901b3cabfad4f4
   m_configObjects: {}
