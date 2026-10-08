@@ -10,7 +10,8 @@ using UnityEngine;
 public static class TmpBootstrap
 {
     // Upper bound on the number of editor frames we wait for the import to become visible.
-    const int MaxFrames = 60;
+    const int MaxFrames = 300;   // was 60: the bound now starts before the async import, and a cold
+                                 // clone's first import can legitimately take longer than one second
 
     static System.Action s_OnReady;
     static bool s_Importing;

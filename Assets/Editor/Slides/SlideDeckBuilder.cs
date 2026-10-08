@@ -40,14 +40,21 @@ public static class SlideDeckBuilder
 
         Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
+        WarnAboutUnrenderedContent(deck);
+
+        GameObject gameRoot = null;
         if (withGameplay)
         {
             // The platformer brings its own light and follow camera. The deck canvas is
             // Screen Space Overlay, so it needs no camera of its own - and exactly one
             // camera must exist in the scene.
+            // It lives under one root so SlidePresenter can deactivate the whole game while the
+            // deck is up: Time.timeScale alone does not stop Update-based input, which would let
+            // Space (advance a bullet) latch a jump that fires as soon as the deck hides.
+            gameRoot = new GameObject("Gameplay Root");
             PlayerController2D labPlayer;
             Camera labCamera;
-            W04LabBuilder.BuildGameplay(null, out labPlayer, out labCamera);
+            W04LabBuilder.BuildGameplay(gameRoot.transform, out labPlayer, out labCamera);
         }
         else
         {
@@ -137,6 +144,7 @@ public static class SlideDeckBuilder
 
         SlidePresenter presenter = chromeGo.AddComponent<SlidePresenter>();
         presenter.slidesRoot = canvasGo;
+        presenter.gameRoot = gameRoot;               // deactivated while the deck is up
         presenter.toggleLabel = toggleLabel;
         toggleLabel.text = presenter.hideLabel;      // deck starts visible
         // AddListener only registers a runtime callback that is lost on scene reload;
@@ -163,6 +171,36 @@ public static class SlideDeckBuilder
     }
 
     // ------------------------------------------------------------------ helpers
+
+    /// <summary>
+    /// SlideView draws title/subtitle/blocks only. A deck that carries images or tables would lose
+    /// them silently, so say so loudly at build time.
+    ///
+    /// NB: JsonUtility materialises a JSON `null` object field as a default *instance*, so a plain
+    /// `!= null` test reports every slide as having an image and a table. Detect real content.
+    /// (`layout == "twoColumn"` is deliberately not warned about: it renders single-column without
+    /// losing anything, and is documented in the README instead.)
+    /// </summary>
+    static void WarnAboutUnrenderedContent(TextAsset deck)
+    {
+        SlideDeckData parsed;
+        try { parsed = JsonUtility.FromJson<SlideDeckData>(deck.text); }
+        catch (System.Exception) { return; }
+        if (parsed == null || parsed.slides == null) return;
+
+        int images = 0, tables = 0;
+        foreach (SlideData s in parsed.slides)
+        {
+            if (s.image != null && !string.IsNullOrEmpty(s.image.path)) images++;
+            if (s.table != null && s.table.cells != null && s.table.cells.Length > 0) tables++;
+        }
+
+        if (images + tables > 0)
+        {
+            Debug.LogWarning("[SlideDeckBuilder] " + deck.name + " contains content SlideView does not draw yet: " +
+                             images + " image(s), " + tables + " table(s). See Assets/Scripts/Slides/README.md.");
+        }
+    }
 
     static RectTransform Rect(Transform parent, string name, Vector2 anchor, Vector2 pos, Vector2 size)
     {

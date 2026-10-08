@@ -37,4 +37,19 @@ public class SlideCursorTests
     [Test] public void ZeroBlockSlideIsImmediatelyExhausted()
     { var c = new SlideCursor(new[]{0,1}); Assert.IsTrue(c.StepsExhausted);
       Assert.IsTrue(c.StepForward()); Assert.AreEqual(1,c.SlideIndex); }
+
+    [Test] public void NextSlideOnTheLastSlideChangesNothing()
+    { var c = new SlideCursor(new[]{2,3}); c.NextSlide(); Assert.AreEqual(1,c.SlideIndex);
+      c.StepForward(); Assert.AreEqual(1,c.RevealedBlocks);
+      c.NextSlide();                                   // already last
+      Assert.AreEqual(1,c.SlideIndex); Assert.AreEqual(1,c.RevealedBlocks); }
+
+    [Test] public void PrevSlideOnTheFirstSlideChangesNothing()
+    { var c = new SlideCursor(new[]{2,3}); c.StepForward(); Assert.AreEqual(1,c.RevealedBlocks);
+      c.PrevSlide();                                   // already first
+      Assert.AreEqual(0,c.SlideIndex); Assert.AreEqual(1,c.RevealedBlocks); }
+
+    [Test] public void StepBackAtTheStartReturnsFalse()
+    { var c = new SlideCursor(new[]{2,3}); Assert.IsFalse(c.StepBack());
+      Assert.AreEqual(0,c.SlideIndex); Assert.AreEqual(0,c.RevealedBlocks); }
 }

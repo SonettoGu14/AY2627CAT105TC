@@ -65,3 +65,28 @@ Two caveats:
   font asset. (The converter already reports per-deck CJK counts.)
 * **The grid caps at 64 slides.** W10's deck is 43, so everything current fits; a longer deck would
   need the cap raised or a scroll view.
+
+## What the renderer does not draw yet
+
+`SlideView` renders **title, subtitle and the bullet / blank / code blocks** only. It parses but does
+not draw:
+
+| Field | Status |
+|---|---|
+| `slide.image` | parsed, **not rendered** |
+| `slide.table` | drawn only when the slide has no blocks — a slide with both loses the table |
+| `slide.layout` (`"twoColumn"`) | parsed, **ignored**; every slide renders single-column |
+
+`SlideDeckBuilder` logs a warning naming the counts whenever a deck carries any of these, so nothing
+is dropped silently. W04 has none of them; the whole course has 2 images and 3 tables.
+
+## Known gaps
+
+* **The runtime has no automated tests.** Only `SlideCursor` and the deck-load contract are covered
+  (11 EditMode tests). `SlideView`, `SlideDeckPlayer`, `SlidePresenter`, `SlideInput` and
+  `SlideNavigator` live in the predefined `Assembly-CSharp`, which a test asmdef cannot reference —
+  so the presenter ↔ gameplay interaction is only verified by hand. That gap is exactly how the
+  "Space latches a jump" bug reached the final review. Closing it means giving
+  `Assets/Scripts/Slides/` its own asmdef (its scripts reference nothing from `Assembly-CSharp`,
+  so the move is clean) and adding a PlayMode test.
+

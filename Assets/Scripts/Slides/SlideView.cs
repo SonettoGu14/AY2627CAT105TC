@@ -11,6 +11,7 @@ public class SlideView : MonoBehaviour
     public void Refresh()
     {
         if (player == null || player.Deck == null || player.Cursor == null) return;
+        if (player.Deck.slides == null || player.Deck.slides.Length == 0) return;   // empty deck
         int i = player.SlideIndex;
         var s = player.Deck.slides[i];
         if (headerText  != null) headerText.text  = header;
@@ -30,7 +31,9 @@ public class SlideView : MonoBehaviour
         {
             var b = s.blocks[k];
             if (b.kind == "blank") { sb.Append('\n'); continue; }
-            string indent = b.level <= 0 ? "\u2022 " : b.level == 1 ? "     \u25E6 " : "          \u25AA ";
+            // Only glyphs the shipped font actually contains: LiberationSans SDF has U+2022 but
+            // NOT U+25E6 or U+25AA, which used to render as nothing plus a per-codepoint TMP error.
+            string indent = b.level <= 0 ? "\u2022 " : b.level == 1 ? "     - " : "          - ";
             if (b.kind == "code") sb.Append("<mark=#1E2430><color=#8FD9A8>  ").Append(b.text).Append("  </color></mark>");
             else sb.Append(indent).Append(b.text);
             sb.Append('\n');

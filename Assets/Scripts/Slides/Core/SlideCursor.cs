@@ -10,8 +10,10 @@ public class SlideCursor
     public bool StepsExhausted => RevealedBlocks >= BlocksAt(SlideIndex);
 
     public void JumpTo(int i) { SlideIndex = Clamp(i); RevealedBlocks = BlocksAt(SlideIndex); }
-    public void NextSlide()   { SlideIndex = Clamp(SlideIndex + 1); RevealedBlocks = 0; }
-    public void PrevSlide()   { SlideIndex = Clamp(SlideIndex - 1); RevealedBlocks = BlocksAt(SlideIndex); }
+    // Clamp at the ends WITHOUT disturbing the current slide's reveal state: pressing right on the
+    // last slide must not collapse its bullets, and pressing left on the first must do nothing.
+    public void NextSlide()   { if (SlideIndex < SlideCount - 1) { SlideIndex++; RevealedBlocks = 0; } }
+    public void PrevSlide()   { if (SlideIndex > 0) { SlideIndex--; RevealedBlocks = BlocksAt(SlideIndex); } }
 
     public bool StepForward()
     {
