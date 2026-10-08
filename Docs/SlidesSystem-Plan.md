@@ -16,8 +16,10 @@
 - Deck JSON is the artefact; never hand-edit a generated scene.
 - Unity layer/tag names already in use: `Ground 6, Player 7, OneWay 8, Hazard 9, Trigger 10`; tags `Coin, Goal, Hazard, Player, Finish`. Do not change them.
 - Script folders follow the project convention (`Assets/Scripts/<area>/`). Slides is a new area; **do not** put it under a week folder.
-- **This project is not a git repository**, so every "Commit" step below is a **Checkpoint** (record the result in the task, move on). Offer `git init` to the user separately.
-- Verification uses the Unity MCP tools (`execute_code`, `manage_scene`, `read_console`, `manage_editor`) via `execute`, and shell for the Python side.
+- **Scope: W04 only.** Build the system generically, but generate **only the W4 deck** and **only the `W04Slides` scene**. Do not convert the other 12 decks.
+- Git: the project is now a repository, branch `feature/slides-system`. **Commit after every task** (`feat(slides): …` / `test(slides): …`).
+- Verification uses the Unity MCP tools (`execute_code`, `manage_scene`, `read_console`, `manage_editor`, `execute_menu_item`) through `execute`, and shell for the Python side.
+- **Unity MCP gotchas that will bite you:** `execute_code` refuses file-deleting code unless you pass `safety_checks:false`; play mode is throttled while the Unity Editor is unfocused, so call `Application.runInBackground = true` from `execute_code` right after entering play; `execute_code` bodies have **no `using` directives** (fully-qualify every type) and compile as C# 6.
 
 ---
 
@@ -233,40 +235,37 @@ Expected: `4 passed`.
 
 ---
 
-## Task 2: Generate all 13 decks
+## Task 2: Generate the W04 deck
 
-**Files:** create `Assets/Slides/*.json` (13)
+**Files:** create `Assets/Slides/W04_L4.json`
 
-- [ ] **Step 1: Run the generator for every deck**
+- [ ] **Step 1: Generate only the W4 deck**
 
-Run: `uv run --with python-pptx python tools/pptx_to_deck.py`
-Expected: 13 lines, one per deck, e.g. `W04_L4   slides= 28 cjk= 0  <- W4 - L4 - Animations and Camera.pptx`
+Run: `uv run --with python-pptx python tools/pptx_to_deck.py "/Users/gyk/Documents/Work/AY26-27/CAT105TC/Slides/W4 - L4 - Animations and Camera.pptx"`
+Expected: `W04_L4   slides= 28 cjk= 0  <- W4 - L4 - Animations and Camera.pptx`
 
-- [ ] **Step 2: Verify counts against the source**
+- [ ] **Step 2: Verify the generated slide count against the source**
 
 Run:
 ```bash
-uv run --with python-pptx python - <<'EOF'
-import glob, json
+uv run --with python-pptx python -c "
+import sys, json; sys.path.insert(0,'tools')
+from pathlib import Path
 from pptx import Presentation
-bad = 0
-for f in sorted(glob.glob("/Users/gyk/Documents/Work/AY26-27/CAT105TC/Slides/*.pptx")):
-    from pathlib import Path
-    import sys; sys.path.insert(0, "tools")
-    from pptx_to_deck import convert
-    n_src = len(Presentation(f).slides); n_out = len(convert(Path(f))["slides"])
-    if n_src != n_out: bad += 1; print("MISMATCH", f, n_src, n_out)
-print("decks ok" if not bad else f"{bad} MISMATCHES")
-EOF
+from pptx_to_deck import convert
+p = Path('/Users/gyk/Documents/Work/AY26-27/CAT105TC/Slides/W4 - L4 - Animations and Camera.pptx')
+src = len(Presentation(str(p)).slides); out = json.loads(Path('Assets/Slides/W04_L4.json').read_text())['slides']
+print('src', src, 'out', len(out), 'OK' if src == len(out) else 'MISMATCH')
+"
 ```
-Expected: `decks ok`
+Expected: `src 28 out 28 OK`
 
-- [ ] **Step 3: Spot-check a JSON by eye**
+- [ ] **Step 3: Spot-check the JSON by eye**
 
 Run: `python3 -m json.tool Assets/Slides/W04_L4.json | head -40`
-Expected: `key`, `slides[0].layout == "title"`, non-empty `blocks` on slide 3.
+Expected: `"key": "W04_L4"`, `slides[0].layout == "title"`, non-empty `blocks` on a mid-deck slide.
 
-- [ ] **Step 4: Checkpoint** — 13 files exist in `Assets/Slides/`.
+- [ ] **Step 4: Commit** — `git add Assets/Slides/W04_L4.json tools && git commit -m "feat(slides): pptx->deck converter + W04 deck JSON"` (include Task 1's script if it was committed separately, which is fine).
 
 ---
 
@@ -586,8 +585,8 @@ public static class TmpBootstrap
   ```csharp
   [MenuItem("CAT105TC/Slides/Build W04Slides")] public static void BuildW04Slides()
       => BuildDeckScene("Assets/Slides/W04_L4.json", "Assets/Scenes/W04Slides.unity", "CAT105TC · Week 04 · Animations and 2D Art", default);
-  [MenuItem("CAT105TC/Slides/Build all decks (scene per deck)")] // loops the json files
   ```
+  (Keep `BuildDeckScene` generic — a `[MenuItem]` per deck is added when the other weeks are built.)
   A `Button(label, parent, pos, size, onClick)` and `Panel(parent, name, pos, size, color)` helper live in this file.
   Font asset: `TMP_Settings.defaultFontAsset` (set by the essentials import); if null, log an error and abort.
 
@@ -717,7 +716,7 @@ Then screenshot with the deck hidden to prove the game is visible, and again wit
 
 - [ ] **Step 1: Write `Assets/Scripts/Slides/README.md`** — how to add a deck: run `uv run --with python-pptx python tools/pptx_to_deck.py`, then menu `CAT105TC ▸ Slides ▸ Build …`; the key map; the folder convention.
 - [ ] **Step 2: Add the `Slides/` areas to `Assets/Scripts/README.md`.**
-- [ ] **Step 3: Full end-to-end check** — rebuild **all** scenes (`Build all current labs` + `Build W04Slides`), `read_console` → 0 errors; play `W04Slides`: slide 1 → `Space`×4 (逐条) → `→`×3 → `G` → jump to 20 → `Tab` (game) → move the player → `Tab` (deck returns on slide 20).
+- [ ] **Step 3: Full end-to-end check** — rebuild `W04Slides` and `W4Lab`, `read_console` → 0 errors; play `W04Slides`: slide 1 → `Space`×4 (逐条) → `→`×3 → `G` → jump to 20 → `Tab` (game) → move the player → `Tab` (deck returns on slide 20).
 - [ ] **Step 4: Screenshots** — slide 1, a mid-deck slide with code, the jump panel open, the deck hidden showing the game. Save to `Assets/Screenshots/`.
 - [ ] **Step 5: Rebuild + re-verify `W4Lab`** (unchanged) and **`W3Lab`** (untouched).
 - [ ] **Step 6: Final report** — slide counts per deck, 0 errors, screenshots attached, known limitations.
