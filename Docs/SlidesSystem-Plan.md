@@ -681,6 +681,8 @@ public static class TmpBootstrap
 
 If `TMPro.TMP_PackageResourceImporter` is not accessible from `Assembly-CSharp-Editor`, drop that call and keep only the `EditorApplication.ExecuteMenuItem` path.
 
+**`ImportResources` is asynchronous in 2022.3.** `Ensure()` must not assume it has finished when the call returns — that NREs on a fresh clone. Subscribe to `AssetDatabase.importPackageCompleted`, keep a short `EditorApplication.delayCall` retry as a backstop, and continue the build from the callback (so `BuildDeckScene` must tolerate being resumed after an import, rather than assuming `Ensure()` returned truthfully).
+
 - [ ] **Step 2: Implement `SlideDeckBuilder`**
 
 ```csharp
@@ -836,7 +838,7 @@ Via MCP: `execute_menu_item("CAT105TC/Slides/Build W04Slides")`, then `read_cons
 
 Via MCP: `manage_editor({action:"play"})`. **Play mode is throttled while the Unity Editor is unfocused — immediately run `execute_code` setting `Application.runInBackground = true`, then poll `mcpforunity://editor/state` until `editor.play_mode.is_playing` is true before screenshotting.** Then:
 1. `manage_camera({action:"screenshot", screenshot_file_name:"slides_01.png"})` — read the PNG: the header bar, the header line, the title `Animations and 2D Art` and the subtitle must be visible. Slide 1 is a title slide, so the body is legitimately empty.
-2. `execute_code` → find the `SlideDeckPlayer` and call `JumpTo(2)` (slide 3, “Raycast”, which has blocks) then `StepForward()` twice; screenshot again as `slides_03_two_bullets.png` and confirm the body shows **exactly two** bullets — this is the 逐条 behaviour.
+2. **Do not use `JumpTo` to reach a content slide for this check** — by contract `JumpTo` reveals *all* of a slide's blocks. Step there instead: `JumpTo(0)` → `NextSlide()` twice → `StepForward()` twice, which lands on slide 3 with exactly two bullets revealed. Screenshot as `slides_03_two_bullets.png` and confirm the body shows **exactly two** bullets — this is the 逐条 behaviour.
 3. `manage_editor({action:"stop"})`.
 
 - [ ] **Step 5: Commit** — `git add -A && git commit -m "feat(slides): TMP bootstrap + 1920x1080 slide template + W04Slides scene"`
@@ -848,6 +850,14 @@ Via MCP: `manage_editor({action:"play"})`. **Play mode is throttled while the Un
 **Files:** modify `Assets/Editor/W04_AnimationCamera/W04LabBuilder.cs`
 
 **Interfaces — produces:** `public static void BuildGameplay(Transform parent, out PlayerController2D player, out Camera cam)` — builds `Environment`/`Gameplay`/`Annotations` + camera + follow, **no HUD**. `Build()` becomes `BuildGameplay(...)` + `LabKit.BuildHud(...)` + the extra refs, so `W4Lab` is unchanged in behaviour.
+
+**Coordination forced by Task 5's design (do this exactly):**
+
+* `SlideDeckBuilder.BuildDeckScene` gains a `bool withGameplay` parameter (its `[MenuItem]` passes `true`). When it is `true`, call `W04LabBuilder.BuildGameplay(null, out player, out cam)` and **do not also create a camera** — `BuildGameplay` already creates the follow camera. Two cameras in one scene is the trap; the deck canvas is Screen Space Overlay and needs no camera of its own.
+* When `withGameplay` is `false`, keep Task 5's `LabKit.MakeCamera(...)` path so a deck can still be built standalone.
+* Do **not** add `LabHud` to the slides scene in this task — the deck is the UI. (Putting the lab HUD behind the deck, toggled by `SlidePresenter`, is a later option, not now.)
+* The gameplay's teaching labels come along with `BuildGameplay`; that is intended — they become visible when the deck is hidden.
+* `W04Slides` must stay in the Build Settings list, and `W4Lab` must remain exactly as it was.
 
 - [ ] **Step 1: Extract `BuildGameplay`** — move everything from the ground platforms through the camera and labels into it; keep `LabKit.SetupSharedAssets()` and `CharacterRig.Build()` at the top of `Build()`, and pass a `Transform` parent for the gameplay root.
 - [ ] **Step 2: Re-run `CAT105TC ▸ W04 Animation & Camera ▸ Build W4 Lab`**, then play it and confirm with MCP that the player moves, the HUD shows, and `read_console` reports 0 errors — i.e. the refactor did not change `W4Lab`.
@@ -921,7 +931,16 @@ public class SlideInput : MonoBehaviour
 }
 ```
 
-- [ ] **Step 3: Add the Chrome canvas to `SlideDeckBuilder`** — a second canvas with `sortingOrder = 10` holding the top-right toggle button (180×52) whose `onClick` calls `presenter.Toggle()`.
+- [ ] **Step 3: Extend `SlideDeckBuilder` with the Chrome canvas**
+
+Task 5's builder creates the deck canvas only; add a **second** canvas — `Chrome Canvas`, `sortingOrder = 10` — holding the top-right toggle button (anchor/pivot `(1,1)`, pos `(−40,−40)`, size `180×52`, TMP label). Wire it:
+
+* `SlidePresenter` goes on the **Chrome Canvas**; `slidesRoot` = the `Slides Canvas` GameObject, `toggleLabel` = the button's TMP text;
+* the button's `onClick.AddListener(presenter.Toggle)`;
+* `SlideInput` also goes on the Chrome Canvas, with `player` and `presenter` wired (`navigator` stays null until Task 8);
+* the Chrome Canvas must **not** be a child of the deck canvas — it has to stay visible when the deck is hidden.
+
+Re-run the builder afterwards.
 - [ ] **Step 4: Verify the toggle in play mode (this is the user's core ask)**
 
 Via MCP play mode, assert:
@@ -946,6 +965,10 @@ Then screenshot with the deck hidden to prove the game is visible, and again wit
 **Interfaces — consumes:** `SlideDeckPlayer`, `SlidePresenter`. **Produces:** button callbacks + `ToggleJumpPanel()`, `bool JumpPanelOpen`.
 
 - [ ] **Step 1: Implement `SlideNavigator`** — `NextClicked()`/`PrevClicked()` forward to the player; `ToggleJumpPanel()` shows/hides a centred 1400×820 panel; the panel is filled at `Awake` with a **grid of numbered buttons** (8 columns, 36 px cells, up to 64 slides — every current deck fits without scrolling) plus a header line `跳转 · 共 N 页 · 当前 12`; clicking button `k` calls `player.JumpTo(k)` and closes the panel.
+
+  Note: `JumpTo` reveals **all** of the target slide's blocks by contract — that is intended for 跳页/复习 (you jump back to see a slide whole). Forward teaching uses `NextSlide` + `StepForward`.
+
+- [ ] **Step 1b: Extend `SlideDeckBuilder`** — add to the deck canvas: the `←`/`→` buttons (bottom-right; `→` at pos `(−40, 32)`, `←` at `(−170, 32)`, both `110×56`), a page label `TMP_Text` (anchor/pivot `(1,0)`, pos `(−300, 40)`, size `140×40`, 28pt, right-aligned) and the centred jump panel. Then wire `SlideNavigator` (`player`, the two buttons, the page label, the panel), set `view.pageText` to the page label, and wire `SlideInput.navigator`. Re-run the builder.
 - [ ] **Step 2: Verify in play mode** — assert `player.JumpTo(17)` then `SlideIndex == 16` and `RevealedBlocks == BlocksAt(16)`; click-less check via direct calls; screenshot the open jump panel.
 - [ ] **Step 3: Checkpoint.**
 
