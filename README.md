@@ -116,10 +116,3 @@ uv run --with python-pptx python tools/pptx_to_deck.py "<deck.pptx>"
 The character art is Kenney's **Toon Characters** pack, released **CC0** — see
 `Assets/Art/KenneyToonCharacters/License.txt`. It is committed here so the scenes open without an
 extra download.
-
-## Local tooling
-
-`Packages/manifest.json` intentionally does **not** list the editor tooling this project was
-developed with (a local Unity MCP bridge). Keep such dependencies out of the published manifest —
-they are git dependencies, so anyone cloning would otherwise have to fetch them before Unity can
-resolve the project.

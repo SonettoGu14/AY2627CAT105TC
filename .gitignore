@@ -37,6 +37,7 @@ Thumbs.db
 .codegraph
 .omo/
 .superpowers/
+AGENTS.md
 
 # ---- Python (tools/) ----
 __pycache__/
