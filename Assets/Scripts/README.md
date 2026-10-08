@@ -72,12 +72,19 @@ Assets/Scripts/
 
   Slides/                     the presentation system - shared across all weeks, NOT lecture material
     Core/                       engine-free: SlideData (JSON shapes) + SlideCursor (state machine)
+    Slides.Runtime.asmdef       the runtime assembly, so the PlayMode tests can see these scripts
     SlideDeckPlayer.cs          parses a deck, owns the cursor, raises Changed
     SlideView.cs                renders one slide into five TMP fields
-    SlidePresenter.cs           shows/hides the deck; owns Time.timeScale
-    SlideInput.cs               the key map (Tab / arrows / Space / G)
+    SlidePresenter.cs           shows/hides the deck; owns Time.timeScale; picks the slide's demo
+    SlideInput.cs               the key map (Tab / arrows / Space / G, and , . for demos)
     SlideNavigator.cs           prev/next buttons, page label, jump-to-slide grid
-    README.md                   keys, regeneration, and how to add a week
+    DemoBase.cs                 one demo = one knowledge point + its live readout
+    DemoStage.cs                owns every demo's stage, its camera, and which one is live
+    DemoReadout.cs              the blackboard panel next to a demo
+    SlideDemoMap.cs             which demos belong to which slide (from <deck>.demos.json)
+    Demos/                      one class per demo family: SpriteRenderer, Sprite, FieldModifier,
+                                Raycast, Controller, Animation, Animator, Camera, Platformer
+    README.md                   keys, regeneration, tests, and how to add a week
 
   W02_VariablesConditionals/  Lecture 2  "C# Fundamentals (1): Variables and Conditionals"
     VariablesDemo.cs            the four core types (string / int / float / bool),
@@ -130,6 +137,8 @@ Assets/Editor/
   Slides/
     TmpBootstrap.cs            imports TMP Essential Resources once (async-safe)
     SlideDeckBuilder.cs        deck JSON -> a 1920x1080 scene (currently W04Slides)
+    SlideDemoBuilder.cs        builds the slide demos onto their own stages
+    DemoKit.cs                 the shared demo furniture: visuals, floors, lines, bars, cameras
 ```
 
 ## The rules
@@ -148,7 +157,10 @@ Assets/Editor/
    weeks only (W4 → W3 is fine, W3 → W4 is not).
 7. `Slides/` is presentation infrastructure, not lecture material. It may reference any week's
    components (a deck scene embeds that week's lab as one of its demos); no week should reference
-   it. Its unit tests live in `Assets/Tests/EditMode/`, whose asmdef can only see `Slides/Core/`.
+   it. Its tests live in `Assets/Tests/EditMode/` (the `SlideCursor` state machine + the real deck's
+   deserialisation contract) and `Assets/Tests/PlayMode/` (the presenter ↔ demo contract). That is
+   why the runtime has its own `Slides.Runtime` assembly and the pure logic a separate engine-free
+   `Slides.Core` one — a test asmdef cannot see the predefined `Assembly-CSharp`.
 8. A week may produce **two scenes with different jobs** — a **Lab Playground** and a **Slides**
    scene. See "Scene types" above. The lab is the students' scene and may use only what has been
    taught; the Slides scene is the instructor's and may reuse any week's components. Neither is a

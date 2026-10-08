@@ -13,12 +13,14 @@ without switching applications.
 | `Core/Slides.Core.asmdef` | the engine-free assembly a test asmdef is allowed to reference |
 | `SlideDeckPlayer.cs` | parses the deck, owns the cursor, raises `Changed` |
 | `SlideView.cs` | renders one slide into five TMP fields (null-guards all of them) |
-| `SlidePresenter.cs` | shows/hides the deck; owns `Time.timeScale` |
+| `SlidePresenter.cs` | shows/hides the deck; owns `Time.timeScale`; picks the slide's demo |
+| `Slides.Runtime.asmdef` | the runtime assembly, so the PlayMode tests can see these scripts |
 | `SlideInput.cs` | the key map; inert while the deck is hidden |
 | `SlideNavigator.cs` | prev/next buttons, page label, jump-to-slide grid |
 | `Assets/Editor/Slides/TmpBootstrap.cs` | imports TMP Essential Resources once (async-safe) |
 | `Assets/Editor/Slides/SlideDeckBuilder.cs` | deck JSON → scene |
 | `Assets/Tests/EditMode/` | `SlideCursorTests` (10) + `DeckLoadTests` (4) |
+| `Assets/Tests/PlayMode/` | `SlidePresenterPlayTests` (3) — the presenter ↔ demo contract |
 | `Assets/Slides/<key>.json` | a generated deck |
 | `Assets/Scenes/W04Slides.unity` | a generated scene |
 
@@ -80,13 +82,26 @@ not draw:
 `SlideDeckBuilder` logs a warning naming the counts whenever a deck carries any of these, so nothing
 is dropped silently. W04 has none of them; the whole course has 2 images and 3 tables.
 
-## Known gaps
+## Tests
 
-* **The runtime has no automated tests.** Only `SlideCursor` and the deck-load contract are covered
-  (14 EditMode tests: 10 cursor + 4 deck-load). `SlideView`, `SlideDeckPlayer`, `SlidePresenter`, `SlideInput` and
-  `SlideNavigator` live in the predefined `Assembly-CSharp`, which a test asmdef cannot reference —
-  so the presenter ↔ gameplay interaction is only verified by hand. That gap is exactly how the
-  "Space latches a jump" bug reached the final review. Closing it means giving
-  `Assets/Scripts/Slides/` its own asmdef (its scripts reference nothing from `Assembly-CSharp`,
-  so the move is clean) and adding a PlayMode test.
+| Where | What it covers |
+|---|---|
+| `Assets/Tests/EditMode/` | `SlideCursorTests` (10) — the state machine; `DeckLoadTests` (4) — the real deck's deserialisation contract |
+| `Assets/Tests/PlayMode/` | `SlidePresenterPlayTests` (3) — hiding the deck activates that slide's demo and unfreezes, returning keeps the slide + step, a one-demo slide survives `Next()` |
+
+The runtime lives in its own `Slides.Runtime` assembly and the pure logic in a separate engine-free
+`Slides.Core` one, precisely so those test assemblies can reference them (a test asmdef cannot see
+the predefined `Assembly-CSharp`).
+
+**Still only verified by hand:** `SlideView`'s formatting, `SlideNavigator`'s grid, `SlideInput`'s
+key map, and the demos themselves. `PlayerController2D` is in `Assembly-CSharp`, so the PlayMode test
+pins the *mechanism* the "Space latches a jump" fix relies on — the demo roots are inactive while the
+deck is up, so no `Update()` can run on them — rather than the controller itself.
+
+## Adding a demo (for a later week)
+
+`Assets/Editor/Slides/DemoKit.cs` holds the furniture every demo is built from: `Visual`, `Character`,
+`Floor`, `Line`, `Bar`, `OwnCamera`, `CameraKit`, plus the shared palette. A new demo is usually:
+a `DemoBase` subclass in `Demos/` (one concept, with `Title` / `Keys` / `Readout`), a `Spec` in
+`SlideDemoBuilder.BuildSpecs()`, and an entry in `<deck>.demos.json`.
 

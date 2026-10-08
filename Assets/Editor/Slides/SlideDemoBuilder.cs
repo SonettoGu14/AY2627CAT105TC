@@ -179,10 +179,7 @@ public static class SlideDemoBuilder
 
     private static GameObject Visual(Transform parent, string name, Sprite sprite, Color color, Vector2 pos, Vector2 scale, int order)
     {
-        GameObject go = LabKit.Child(parent, name, pos);
-        go.transform.localScale = new Vector3(scale.x, scale.y, 1f);
-        LabKit.AddSprite(go, sprite, color, order);
-        return go;
+        return DemoKit.Visual(parent, name, sprite, color, pos, scale, order);
     }
 
     // ---------------- controller ----------------
@@ -461,38 +458,19 @@ public static class SlideDemoBuilder
 
     private static Camera OwnCamera(Transform parent, string name, Vector3 pos, float size, CameraDemo.Mode mode)
     {
-        GameObject go = LabKit.Child(parent, name, pos);
-        Camera c = go.AddComponent<Camera>();
-        c.orthographic = !(mode == CameraDemo.Mode.Projection || mode == CameraDemo.Mode.Fov);
-        c.orthographicSize = size;
-        c.fieldOfView = 60f;
-        c.clearFlags = CameraClearFlags.SolidColor;
-        c.backgroundColor = new Color32(0x0E, 0x14, 0x20, 0xFF);
-        c.nearClipPlane = -50f;
-        c.farClipPlane = 100f;
-        return c;
+        bool orthographic = !(mode == CameraDemo.Mode.Projection || mode == CameraDemo.Mode.Fov);
+        return DemoKit.OwnCamera(parent, name, pos, size, orthographic);
     }
 
     private static void CameraKit(Transform t, out SpriteRenderer groundSprite, out SpriteRenderer playerSprite)
     {
-        GameObject ground = LabKit.Platform(t, "KitGround", -2.5f, -2f, 4f, 0.6f, Orange, "Ground");
-        groundSprite = ground.GetComponentInChildren<SpriteRenderer>();
-        GameObject player = Visual(t, "KitPlayer", LabKit.CharacterSprite("idle"), Color.white, new Vector2(1.5f, -1.2f), Vector2.one, 2);
-        player.layer = LabKit.Layer("Player");
-        playerSprite = player.GetComponent<SpriteRenderer>();
+        DemoKit.CameraKit(t, out groundSprite, out playerSprite);
     }
 
     // ---------------- shared bits ----------------
     private static LineRenderer Line(Transform parent, string name, int order)
     {
-        GameObject go = LabKit.Child(parent, name, Vector3.zero);
-        LineRenderer lr = go.AddComponent<LineRenderer>();
-        lr.positionCount = 2;
-        lr.widthMultiplier = 0.08f;
-        lr.useWorldSpace = true;
-        lr.sortingOrder = order;
-        lr.material = new Material(Shader.Find("Sprites/Default"));
-        return lr;
+        return DemoKit.Line(parent, name, order);
     }
 
     private static string ControllerPath(string name)
