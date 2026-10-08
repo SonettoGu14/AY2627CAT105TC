@@ -1,0 +1,39 @@
+# ---- Unity generated ----
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]serSettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+sysinfo.txt
+*.stackdump
+*.unitypackage
+
+# ---- IDE / generated project files ----
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+.vs/
+.idea/
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+
+# ---- local tooling state ----
+.codegraph
+.omo/
+.superpowers/
