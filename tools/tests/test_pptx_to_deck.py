@@ -1,7 +1,7 @@
 import sys, json
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from pptx_to_deck import convert, deck_key, deck_title
+from pptx_to_deck import convert, deck_key, deck_title, block_kind
 
 DECK = Path("/Users/gyk/Documents/Work/AY26-27/CAT105TC/Slides/W4 - L4 - Animations and Camera.pptx")
 
@@ -42,3 +42,16 @@ def test_title_slide_has_subtitle_no_blocks():
 def test_slide_24_is_two_column():
     deck = convert(DECK)
     assert deck["slides"][23]["layout"] == "twoColumn"
+
+
+def test_deck_subtitle_from_title_slide():
+    deck = convert(DECK)
+    assert deck["subtitle"] == "Lecture 4"
+
+
+def test_prose_ending_in_semicolon_stays_bullet():
+    assert block_kind("The code is written here for A;") == "bullet"
+
+
+def test_statement_ending_in_semicolon_is_code():
+    assert block_kind("rb.velocity = new Vector2(1, 2);") == "code"

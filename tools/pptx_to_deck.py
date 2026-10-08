@@ -15,7 +15,17 @@ from pptx import Presentation
 from pptx.enum.shapes import MSO_SHAPE_TYPE, PP_PLACEHOLDER
 
 CJK = re.compile(r"[\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af]")
-CODE_HINT = re.compile(r"^\s*[A-Za-z_][\w\.]*\s*\(.*\)\s*;?\s*$|;\s*$")
+# a bare call shape, e.g. `Physics2D.Raycast(...)` or `foo();`
+CODE_CALL = re.compile(r"^\s*[A-Za-z_][\w\.]*\s*\(.*\)\s*;?\s*$")
+# a statement terminator: only code when the line also contains '(' or '='
+STMT_END = re.compile(r";\s*$")
+
+
+def block_kind(text: str) -> str:
+    """Classify a non-empty paragraph's text as 'code' or 'bullet'."""
+    if len(text) < 80 and (CODE_CALL.match(text) or (STMT_END.search(text) and ("(" in text or "=" in text))):
+        return "code"
+    return "bullet"
 
 
 def deck_key(p: Path) -> str:
@@ -38,7 +48,7 @@ def _blocks_from_frame(tf) -> list[dict]:
         if not text:
             out.append({"level": 0, "text": "", "kind": "blank"})
             continue
-        kind = "code" if CODE_HINT.match(text) and len(text) < 80 else "bullet"
+        kind = block_kind(text)
         out.append({"level": min(int(para.level or 0), 4), "text": text, "kind": kind})
     # drop leading/trailing blanks so pages don't open with an empty line
     while out and out[0]["kind"] == "blank":
@@ -85,6 +95,7 @@ def convert(pptx_path: Path, image_root: Path | None = None) -> dict:
     prs = Presentation(str(pptx_path))
     key = deck_key(pptx_path)
     slides = []
+    deck_subtitle = ""
     for i, s in enumerate(prs.slides, 1):
         title_shape = s.shapes.title
         title = subtitle = ""
@@ -121,10 +132,12 @@ def convert(pptx_path: Path, image_root: Path | None = None) -> dict:
             layout = "twoColumn"
         else:
             layout = "content"
+        if i == 1:
+            deck_subtitle = subtitle
         slides.append({"index": i, "layout": layout, "title": title,
                        "subtitle": subtitle, "blocks": blocks,
                        "table": table, "image": image})
-    return {"key": key, "title": deck_title(pptx_path), "subtitle": "",
+    return {"key": key, "title": deck_title(pptx_path), "subtitle": deck_subtitle,
             "source": pptx_path.name, "generated": datetime.now().isoformat(timespec="seconds"),
             "slides": slides}
 
