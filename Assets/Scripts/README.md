@@ -192,7 +192,6 @@ Assets/Editor/
 | `Assets/Slides/<key>.json` | generated decks (source: the course `.pptx` files) |
 | `Assets/Scenes/W04Slides.unity` | the W4 deck scene — the slides, with the W4 game behind them |
 | `Assets/TextMesh Pro/` | TMP Essential Resources, committed (the deck scene references its font by GUID) |
-| `Captures/` | verification screenshots — not Unity assets, kept as evidence |
 
 ## Adding W5
 
