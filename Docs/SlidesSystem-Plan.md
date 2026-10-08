@@ -968,7 +968,7 @@ Screenshot with the deck hidden (game + Chrome button visible) and with it shown
 - [ ] **Step 1b: Extend `SlideDeckBuilder`** — add to the deck canvas: the `←`/`→` buttons (bottom-right; `→` at pos `(−40, 32)`, `←` at `(−170, 32)`, both `110×56`), a page label `TMP_Text` (anchor/pivot `(1,0)`, pos `(−300, 40)`, size `140×40`, 28pt, right-aligned) and the centred jump panel. Then wire `SlideNavigator` (`player`, the two buttons, the page label, the panel), set `view.pageText` to the page label, and wire `SlideInput.navigator`. Re-run the builder.
 
   The `EventSystem` already exists in the scene (Task 7 added it — without one, no uGUI button receives clicks). Use `UnityEventTools.AddPersistentListener` for the button callbacks, not `AddListener`: the scene is saved to disk, and a runtime-only listener does not survive a scene reload. Keep every label ASCII — LiberationSans SDF has no CJK glyphs and renders them as tofu.
-- [ ] **Step 2: Verify in play mode** — assert `player.JumpTo(17)` then `SlideIndex == 16` and `RevealedBlocks == BlocksAt(16)`; click-less check via direct calls; screenshot the open jump panel.
+- [ ] **Step 2: Verify in play mode** — `JumpTo` is **0-based**, so `player.JumpTo(17)` must leave `SlideIndex == 17` (shown as "18 / 28") with `RevealedBlocks == BlocksAt(17)`; then `NextClicked()` → 18 and `PrevClicked()` → 17; `ToggleJumpPanel()` flips `JumpPanelOpen` and the panel's active state; the grid must hold one cell per slide (28). Capture the open jump panel and **read the PNG back** to confirm the grid and header are legible.
 - [ ] **Step 3: Checkpoint.**
 
 ---

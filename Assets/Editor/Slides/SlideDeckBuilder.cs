@@ -83,6 +83,40 @@ public static class SlideDeckBuilder
         view.subtitleText = subtitleText;
         view.bodyText = bodyText;
 
+        // --- navigation (deck canvas) -------------------------------------------------
+        // Labels are ASCII on purpose: LiberationSans SDF has no arrow/CJK glyphs.
+        Vector2 bottomRight = new Vector2(1f, 0f);
+        TMP_Text pageLabel = TmpText(root, "PageLabel", bottomRight,
+            new Vector2(-300f, 40f), new Vector2(140f, 40f), 28f, MutedColor, TextAlignmentOptions.Right);
+        Button nextButton = UiButton(root, "NextButton", bottomRight,
+            new Vector2(-40f, 32f), new Vector2(110f, 56f), BarColor);
+        TmpText(nextButton.transform, "Label", new Vector2(0.5f, 0.5f), Vector2.zero,
+            new Vector2(110f, 56f), 34f, TitleColor, TextAlignmentOptions.Center).text = ">";
+        Button prevButton = UiButton(root, "PrevButton", bottomRight,
+            new Vector2(-170f, 32f), new Vector2(110f, 56f), BarColor);
+        TmpText(prevButton.transform, "Label", new Vector2(0.5f, 0.5f), Vector2.zero,
+            new Vector2(110f, 56f), 34f, TitleColor, TextAlignmentOptions.Center).text = "<";
+
+        // Centred jump-to-slide panel. SlideNavigator fills it with the numbered grid
+        // at runtime; it is saved inactive and only shown by ToggleJumpPanel().
+        Image jumpPanelImage = UiImage(root, "JumpPanel", new Vector2(0.5f, 0.5f),
+            Vector2.zero, new Vector2(1400f, 820f), new Color32(0x10, 0x18, 0x28, 0xFF));
+        GameObject jumpPanel = jumpPanelImage.gameObject;
+        jumpPanel.SetActive(false);
+
+        view.pageText = pageLabel;               // the navigator owns the page indicator
+
+        SlideNavigator navigator = canvasGo.AddComponent<SlideNavigator>();
+        navigator.player = player;
+        navigator.nextButton = nextButton;
+        navigator.prevButton = prevButton;
+        navigator.pageLabel = pageLabel;
+        navigator.jumpPanel = jumpPanel;
+
+        // Persistent listeners serialise into the saved scene; AddListener does not.
+        UnityEditor.Events.UnityEventTools.AddPersistentListener(nextButton.onClick, navigator.NextClicked);
+        UnityEditor.Events.UnityEventTools.AddPersistentListener(prevButton.onClick, navigator.PrevClicked);
+
         // --- Chrome canvas -----------------------------------------------------------
         // A second, always-on canvas that stays visible when the deck is hidden, so the
         // toggle button keeps working. It must NOT be a child of the deck canvas.
@@ -112,6 +146,7 @@ public static class SlideDeckBuilder
         SlideInput slideInput = chromeGo.AddComponent<SlideInput>();
         slideInput.player = player;
         slideInput.presenter = presenter;
+        slideInput.navigator = navigator;
 
         // UI buttons need an EventSystem to receive clicks; the deck scene has none.
         if (Object.FindObjectOfType<UnityEngine.EventSystems.EventSystem>() == null)
