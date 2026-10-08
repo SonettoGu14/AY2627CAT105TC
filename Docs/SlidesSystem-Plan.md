@@ -615,67 +615,231 @@ Via MCP: `refresh_unity({mode:"force",compile:"request",wait_for_ready:true})`, 
 
 ---
 
-## Task 5: TMP bootstrap + slide template + `SlideDeckBuilder` → W04Slides (slides only)
+## Task 5: TMP bootstrap + slide template + `SlideDeckBuilder` → W04Slides
 
 **Files:** create `Assets/Editor/Slides/TmpBootstrap.cs`, `Assets/Editor/Slides/SlideDeckBuilder.cs`
 
-**Interfaces — consumes:** `SlideDeckPlayer`, `SlideView`, `SlideDeckData`.
-**Produces:** `SlideDeckBuilder.BuildDeckScene(string deckJsonPath, string scenePath, string header, BuildOptions opts)`; menu `CAT105TC ▸ Slides ▸ Build W04Slides`.
+**Interfaces — consumes:** `SlideDeckPlayer`, `SlideView`, and `LabKit` (which already provides `MakeCamera`, `MakeLight`, `AddSceneToBuildSettings`).
+**Produces:** `SlideDeckBuilder.BuildDeckScene(string deckJsonPath, string scenePath, string header)`; menu `CAT105TC ▸ Slides ▸ Build W04Slides`.
 
-**Layout constants (1920×1080, all `anchoredPosition` from the stated pivot):**
+**Scope of this task: the deck canvas only** — no navigation UI, no toggle, no game. Tasks 6/7/8 extend this same builder file and re-run it. **Nothing in this task may reference `SlideInput`, `SlideNavigator` or `SlidePresenter`: those types do not exist until Tasks 7 and 8, and referencing them will not compile.**
 
-| Element | anchor / pivot | pos | size | font |
+**Layout constants (1920×1080; `pivot = anchor` throughout):**
+
+| Element | anchor | pos | size | font |
 |---|---|---|---|---|
-| background | full stretch | — | 1920×1080 | colour `#0E1420` |
-| header bar | (0,1)/(0,1) | (0,0) | 1920×64 | bg `#101828` |
-| headerText | (0,1)/(0,1) | (48,−14) | 1400×36 | 26, accent `#6FA8FF`, left |
-| titleText | (0,1)/(0,1) | (120,−150) | 1680×130 | 64, white, left, autosize off |
-| subtitleText | (0,1)/(0,1) | (120,−290) | 1680×50 | 30, `#8FA3BF`, left |
-| bodyText | (0,1)/(0,1) | (120,−360) | 1680×600 | 40 → autosize 22..40, `#E6ECF5`, left, lineSpacing 1.15 |
-| pageText | (1,0)/(1,0) | (−170,40) | 140×40 | 28, right |
-| prev/next | (1,0)/(1,0) | (−40/…, 32) | 110×56 | buttons |
-| jump panel | centre | — | 1400×820 | hidden by default |
+| Background | full stretch | — | — | `#0E1420` |
+| HeaderBar | (0,1) | (0,0) | 1920×64 | `#101828` |
+| HeaderText | (0,1) | (48,−14) | 1400×36 | 26, `#8FA3BF`, Left |
+| TitleText | (0,1) | (120,−150) | 1680×130 | 64, `#F2F6FC`, TopLeft |
+| SubtitleText | (0,1) | (120,−290) | 1680×50 | 30, `#6FA8FF`, TopLeft |
+| BodyText | (0,1) | (120,−360) | 1680×600 | autosize 22..40, `#E6ECF5`, TopLeft, lineSpacing 15 |
+
+`view.pageText` is deliberately left null here — Task 8's navigator owns it, and `SlideView` already null-guards every field.
 
 - [ ] **Step 1: Implement `TmpBootstrap` (idempotent essentials import)**
 
 ```csharp
-using System.IO; using UnityEditor; using UnityEngine;
+using System.IO;
+using UnityEditor;
+using UnityEngine;
+
+/// Imports TextMeshPro Essential Resources once, so a fresh clone can build a slide scene
+/// without a manual menu step. Idempotent.
 public static class TmpBootstrap
 {
-    public static void Ensure()
+    public static bool Ensure()
     {
-        if (Directory.Exists("Assets/TextMesh Pro")) return;              // already imported
-        TMPro.TMP_PackageResourceImporter.ImportResources(true, false, false);   // interactive:false
+        if (Directory.Exists("Assets/TextMesh Pro") && TMPro.TMP_Settings.defaultFontAsset != null)
+        {
+            return true;
+        }
+
+        // Preferred: the package's own importer.
+        TMPro.TMP_PackageResourceImporter.ImportResources(true, false, false);
         AssetDatabase.Refresh();
+
+        if (TMPro.TMP_Settings.defaultFontAsset == null)
+        {
+            // Fallback: the menu item the importer drives behind the scenes.
+            EditorApplication.ExecuteMenuItem("Window/TextMeshPro/Import TMP Essential Resources");
+            AssetDatabase.Refresh();
+        }
+
+        if (TMPro.TMP_Settings.defaultFontAsset == null)
+        {
+            Debug.LogError("[Slides] TextMeshPro Essential Resources could not be imported. Run " +
+                           "Window > TextMeshPro > Import TMP Essential Resources, then rebuild.");
+            return false;
+        }
+
         Debug.Log("[Slides] imported TMP Essential Resources.");
+        return true;
     }
 }
 ```
 
-- [ ] **Step 2: Implement `SlideDeckBuilder`** — a `LabKit`-style static builder that:
-  1. calls `TmpBootstrap.Ensure()`;
-  2. reads the JSON from `Assets/Slides/`, wraps it in a `TextAsset` (the `.json` is already a TextAsset) and logs an actionable error if missing;
-  3. `EditorSceneManager.NewScene(EmptyScene, Single)`, adds a camera (+ `AudioListener`), a light, and the 1920×1080 canvas hierarchy per the table above;
-  4. adds `SlideDeckPlayer` (with `deckJson` wired), `SlideView` (all TMP refs wired), `SlideInput`, `SlideNavigator`, `SlidePresenter`;
-  5. saves to `scenePath` and adds it to Build Settings.
-  Menu:
-  ```csharp
-  [MenuItem("CAT105TC/Slides/Build W04Slides")] public static void BuildW04Slides()
-      => BuildDeckScene("Assets/Slides/W04_L4.json", "Assets/Scenes/W04Slides.unity", "CAT105TC · Week 04 · Animations and 2D Art", default);
-  ```
-  (Keep `BuildDeckScene` generic — a `[MenuItem]` per deck is added when the other weeks are built.)
-  A `Button(label, parent, pos, size, onClick)` and `Panel(parent, name, pos, size, color)` helper live in this file.
-  Font asset: `TMP_Settings.defaultFontAsset` (set by the essentials import); if null, log an error and abort.
+If `TMPro.TMP_PackageResourceImporter` is not accessible from `Assembly-CSharp-Editor`, drop that call and keep only the `EditorApplication.ExecuteMenuItem` path.
 
-- [ ] **Step 3: Build and verify the scene exists**
+- [ ] **Step 2: Implement `SlideDeckBuilder`**
 
-Via MCP: `execute_menu_item("CAT105TC/Slides/Build W04Slides")`, then `read_console({types:["error"]})` → 0 errors; `manage_scene({action:"load", path:"Assets/Scenes/W04Slides.unity"})` → loads.
+```csharp
+using TMPro;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+/// Generates a slide-deck scene from a deck JSON. Week-independent: one [MenuItem] per deck.
+public static class SlideDeckBuilder
+{
+    static readonly Color BgColor     = new Color32(0x0E, 0x14, 0x20, 0xFF);
+    static readonly Color BarColor    = new Color32(0x10, 0x18, 0x28, 0xFF);
+    static readonly Color TitleColor  = new Color32(0xF2, 0xF6, 0xFC, 0xFF);
+    static readonly Color BodyColor   = new Color32(0xE6, 0xEC, 0xF5, 0xFF);
+    static readonly Color MutedColor  = new Color32(0x8F, 0xA3, 0xBF, 0xFF);
+    static readonly Color AccentColor = new Color32(0x6F, 0xA8, 0xFF, 0xFF);
+
+    static readonly Vector2 TopLeft = new Vector2(0f, 1f);
+
+    [MenuItem("CAT105TC/Slides/Build W04Slides")]
+    public static void BuildW04Slides()
+    {
+        BuildDeckScene("Assets/Slides/W04_L4.json", "Assets/Scenes/W04Slides.unity",
+                       "CAT105TC  \u00b7  Week 04  \u00b7  Animations and 2D Art");
+    }
+
+    public static void BuildDeckScene(string deckJsonPath, string scenePath, string header)
+    {
+        if (!TmpBootstrap.Ensure()) return;
+
+        TextAsset deck = AssetDatabase.LoadAssetAtPath<TextAsset>(deckJsonPath);
+        if (deck == null)
+        {
+            Debug.LogError("[Slides] deck JSON not found: " + deckJsonPath +
+                           "  ->  run:  uv run --with python-pptx python tools/pptx_to_deck.py <deck.pptx>");
+            return;
+        }
+
+        Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        LabKit.MakeLight(null);
+        LabKit.MakeCamera(null, new Vector3(0f, 0f, -10f), 5f);
+
+        GameObject canvasGo = new GameObject("Slides Canvas",
+            typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+        canvasGo.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
+        CanvasScaler scaler = canvasGo.GetComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920f, 1080f);
+        scaler.matchWidthOrHeight = 0.5f;
+        Transform root = canvasGo.transform;
+
+        FullScreen(root, "Background", BgColor);
+        UiImage(root, "HeaderBar", TopLeft, new Vector2(0f, 0f), new Vector2(1920f, 64f), BarColor);
+
+        TMP_Text headerText   = TmpText(root, "HeaderText",   TopLeft, new Vector2(48f, -14f),   new Vector2(1400f, 36f),  26f, MutedColor,  TextAlignmentOptions.Left);
+        TMP_Text titleText    = TmpText(root, "TitleText",    TopLeft, new Vector2(120f, -150f), new Vector2(1680f, 130f), 64f, TitleColor,  TextAlignmentOptions.TopLeft);
+        TMP_Text subtitleText = TmpText(root, "SubtitleText", TopLeft, new Vector2(120f, -290f), new Vector2(1680f, 50f),  30f, AccentColor, TextAlignmentOptions.TopLeft);
+        TMP_Text bodyText     = TmpBody(root, "BodyText", TopLeft, new Vector2(120f, -360f), new Vector2(1680f, 600f));
+
+        SlideDeckPlayer player = canvasGo.AddComponent<SlideDeckPlayer>();
+        player.deckJson = deck;
+
+        SlideView view = canvasGo.AddComponent<SlideView>();
+        view.player = player;
+        view.header = header;
+        view.headerText = headerText;
+        view.titleText = titleText;
+        view.subtitleText = subtitleText;
+        view.bodyText = bodyText;
+
+        EditorSceneManager.SaveScene(scene, scenePath);
+        LabKit.AddSceneToBuildSettings(scenePath);
+        AssetDatabase.SaveAssets();
+        Debug.Log("[SlideDeckBuilder] built " + scenePath + " from " + deckJsonPath);
+    }
+
+    // ------------------------------------------------------------------ helpers
+
+    static RectTransform Rect(Transform parent, string name, Vector2 anchor, Vector2 pos, Vector2 size)
+    {
+        GameObject go = new GameObject(name, typeof(RectTransform));
+        RectTransform rt = (RectTransform)go.transform;
+        rt.SetParent(parent, false);
+        rt.anchorMin = anchor;
+        rt.anchorMax = anchor;
+        rt.pivot = anchor;
+        rt.anchoredPosition = pos;
+        rt.sizeDelta = size;
+        return rt;
+    }
+
+    static Image FullScreen(Transform parent, string name, Color color)
+    {
+        GameObject go = new GameObject(name, typeof(RectTransform));
+        RectTransform rt = (RectTransform)go.transform;
+        rt.SetParent(parent, false);
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.one;
+        rt.offsetMin = Vector2.zero;
+        rt.offsetMax = Vector2.zero;
+        Image img = go.AddComponent<Image>();
+        img.color = color;
+        img.raycastTarget = false;
+        return img;
+    }
+
+    static Image UiImage(Transform parent, string name, Vector2 anchor, Vector2 pos, Vector2 size, Color color)
+    {
+        RectTransform rt = Rect(parent, name, anchor, pos, size);
+        Image img = rt.gameObject.AddComponent<Image>();
+        img.color = color;
+        img.raycastTarget = false;
+        return img;
+    }
+
+    static TMP_Text TmpText(Transform parent, string name, Vector2 anchor, Vector2 pos, Vector2 size,
+                            float fontSize, Color color, TextAlignmentOptions align)
+    {
+        RectTransform rt = Rect(parent, name, anchor, pos, size);
+        TextMeshProUGUI t = rt.gameObject.AddComponent<TextMeshProUGUI>();
+        t.font = TMP_Settings.defaultFontAsset;
+        t.fontSize = fontSize;
+        t.color = color;
+        t.alignment = align;
+        t.richText = true;
+        t.enableWordWrapping = true;
+        t.raycastTarget = false;
+        t.text = string.Empty;
+        return t;
+    }
+
+    static TMP_Text TmpBody(Transform parent, string name, Vector2 anchor, Vector2 pos, Vector2 size)
+    {
+        TMP_Text t = TmpText(parent, name, anchor, pos, size, 40f, BodyColor, TextAlignmentOptions.TopLeft);
+        t.enableAutoSizing = true;
+        t.fontSizeMin = 22f;
+        t.fontSizeMax = 40f;
+        t.lineSpacing = 15f;
+        t.overflowMode = TextOverflowModes.Overflow;
+        return t;
+    }
+}
+```
+
+- [ ] **Step 3: Build and verify it compiles and loads**
+
+Via MCP: `execute_menu_item("CAT105TC/Slides/Build W04Slides")`, then `read_console({types:["error"],count:40,format:"plain"})` → **0 errors** (a `[Slides] imported TMP Essential Resources.` log line is expected the first time). Then `manage_scene({action:"load", path:"Assets/Scenes/W04Slides.unity"})` → loads.
 
 - [ ] **Step 4: Verify rendering in play mode**
 
-Via MCP: `manage_editor({action:"play"})`; then `manage_camera({action:"screenshot", screenshot_file_name:"slides_01.png"})`; read the PNG and confirm slide 1 renders: header, title, body with the first bullet only (逐条), page "1 / 28".
+Via MCP: `manage_editor({action:"play"})`. **Play mode is throttled while the Unity Editor is unfocused — immediately run `execute_code` setting `Application.runInBackground = true`, then poll `mcpforunity://editor/state` until `editor.play_mode.is_playing` is true before screenshotting.** Then:
+1. `manage_camera({action:"screenshot", screenshot_file_name:"slides_01.png"})` — read the PNG: the header bar, the header line, the title `Animations and 2D Art` and the subtitle must be visible. Slide 1 is a title slide, so the body is legitimately empty.
+2. `execute_code` → find the `SlideDeckPlayer` and call `JumpTo(2)` (slide 3, “Raycast”, which has blocks) then `StepForward()` twice; screenshot again as `slides_03_two_bullets.png` and confirm the body shows **exactly two** bullets — this is the 逐条 behaviour.
+3. `manage_editor({action:"stop"})`.
 
-- [ ] **Step 5: Checkpoint.**
+- [ ] **Step 5: Commit** — `git add -A && git commit -m "feat(slides): TMP bootstrap + 1920x1080 slide template + W04Slides scene"`
 
 ---
 
