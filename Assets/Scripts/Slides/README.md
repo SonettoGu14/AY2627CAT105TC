@@ -44,11 +44,11 @@ does, and stays clickable while the deck is hidden.
 
 ## Regenerating
 
-```bash
-# 1. deck .pptx -> Assets/Slides/<key>.json
-uv run --with python-pptx python tools/pptx_to_deck.py "<deck.pptx>"
+The deck JSON (`Assets/Slides/<key>.json`) is produced from the course `.pptx` by a converter that
+is **not part of this repository** — it is the lecturer's own tooling.
 
-# 2. JSON -> scene:  menu  CAT105TC ▸ Slides ▸ Build W04Slides
+```bash
+# deck JSON -> scene:  menu  CAT105TC ▸ Slides ▸ Build W04Slides
 ```
 
 **Rule: edit the `.pptx` (or the generated JSON), never the scene by hand.** The builder rebuilds

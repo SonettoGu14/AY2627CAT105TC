@@ -44,7 +44,8 @@ public static class SlideDeckBuilder
         if (deck == null)
         {
             Debug.LogError("[Slides] deck JSON not found: " + deckJsonPath +
-                           "  ->  run:  uv run --with python-pptx python tools/pptx_to_deck.py <deck.pptx>");
+                           "  ->  it is generated from the course .pptx by the deck converter, " +
+                           "which is not part of this repository");
             return;
         }
 

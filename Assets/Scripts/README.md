@@ -201,7 +201,7 @@ Assets/Editor/
 3. `Assets/Animations/W05_Topic/` (and `Assets/Scenes/W5Lab.unity`) if it needs its own.
 4. Reuse `LabKit` (scene helpers + HUD) and earlier weeks' components where the lecture does.
 5. The week's **Slides** scene, if the week is taught from a deck:
-   1. convert the deck: `uv run --with python-pptx python tools/pptx_to_deck.py "<deck.pptx>"`;
+   1. generate the deck JSON from the course `.pptx` — the converter is the lecturer's own tooling;
    2. write `Assets/Slides/<deck>.demos.json`: one entry per slide, a comma-separated list of demo
       keys (`""` = that slide shows nothing);
    3. add the demos for that week's knowledge points. Reuse `DemoBase` / `DemoStage` /

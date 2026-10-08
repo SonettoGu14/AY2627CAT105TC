@@ -39,9 +39,11 @@ Thumbs.db
 .superpowers/
 AGENTS.md
 
-# ---- Python (tools/) ----
+# ---- local slide tooling (the lecturer's own; not published) ----
+/Docs/
+/tools/
+
+# ---- Python ----
 __pycache__/
 *.pyc
-
-# ---- pytest ----
 .pytest_cache/

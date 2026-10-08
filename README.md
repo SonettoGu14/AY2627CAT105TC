@@ -70,8 +70,6 @@ Assets/
   Animations/        the AnimationClips and AnimatorControllers
   Slides/            the generated decks (<key>.json) and per-slide demo maps
   Tests/             EditMode + PlayMode
-Docs/                the slides design, plan, and demo checklist
-tools/               pptx_to_deck.py — the deck converter, with tests
 ```
 
 `Assets/Scripts/README.md` is the **project conventions** document (the rules, the scene types, the
@@ -80,10 +78,7 @@ per-week layout). `Assets/Scenes/README.md` points at the scene-type definitions
 ## Regenerating the generated things
 
 ```bash
-# a deck:  .pptx  ->  Assets/Slides/<key>.json
-uv run --with python-pptx python tools/pptx_to_deck.py "<deck.pptx>"
-
-# then, inside Unity:
+# inside Unity:
 #   CAT105TC ▸ Slides ▸ Build W04Slides      (deck JSON -> the slides scene)
 #   CAT105TC ▸ W03 Physics2D ▸ Build W3 Lab
 #   CAT105TC ▸ W04 Animation & Camera ▸ Build W4 Lab (Platformer)
@@ -107,9 +102,6 @@ uv run --with python-pptx python tools/pptx_to_deck.py "<deck.pptx>"
 |---|---|
 | `Assets/Scripts/README.md` | **project conventions** — the rules and the two scene types |
 | `Assets/Scripts/Slides/README.md` | the slides system: keys, regeneration, tests, how to add a week |
-| `Docs/SlidesSystem-Design.md` | the slides system's design |
-| `Docs/SlidesDemos.md` | the 44-demo checklist and the slide → demo mapping |
-| `Docs/SlidesSystem-Plan.md` | the implementation plan, with the verification notes |
 
 ## Art
 
