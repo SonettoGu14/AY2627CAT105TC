@@ -890,7 +890,7 @@ public class SlidePresenter : MonoBehaviour
 {
     public GameObject slidesRoot;       // deck canvas root
     public TMP_Text toggleLabel;
-    public string hideLabel = "隐藏幻灯片  (Tab)", showLabel = "显示幻灯片  (Tab)";
+    public string hideLabel = "Hide slides  (Tab)", showLabel = "Show slides  (Tab)";
     public bool DeckVisible { get; private set; } = true;
 
     void Start() => SetDeckVisible(true);
