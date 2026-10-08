@@ -965,6 +965,8 @@ Screenshot with the deck hidden (game + Chrome button visible) and with it shown
   Note: `JumpTo` reveals **all** of the target slide's blocks by contract — that is intended for 跳页/复习 (you jump back to see a slide whole). Forward teaching uses `NextSlide` + `StepForward`.
 
 - [ ] **Step 1b: Extend `SlideDeckBuilder`** — add to the deck canvas: the `←`/`→` buttons (bottom-right; `→` at pos `(−40, 32)`, `←` at `(−170, 32)`, both `110×56`), a page label `TMP_Text` (anchor/pivot `(1,0)`, pos `(−300, 40)`, size `140×40`, 28pt, right-aligned) and the centred jump panel. Then wire `SlideNavigator` (`player`, the two buttons, the page label, the panel), set `view.pageText` to the page label, and wire `SlideInput.navigator`. Re-run the builder.
+
+  The `EventSystem` already exists in the scene (Task 7 added it — without one, no uGUI button receives clicks). Use `UnityEventTools.AddPersistentListener` for the button callbacks, not `AddListener`: the scene is saved to disk, and a runtime-only listener does not survive a scene reload. Keep every label ASCII — LiberationSans SDF has no CJK glyphs and renders them as tofu.
 - [ ] **Step 2: Verify in play mode** — assert `player.JumpTo(17)` then `SlideIndex == 16` and `RevealedBlocks == BlocksAt(16)`; click-less check via direct calls; screenshot the open jump panel.
 - [ ] **Step 3: Checkpoint.**
 
