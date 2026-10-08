@@ -889,7 +889,6 @@ using TMPro; using UnityEngine;
 public class SlidePresenter : MonoBehaviour
 {
     public GameObject slidesRoot;       // deck canvas root
-    public GameObject gameRoot;         // optional: gameplay root
     public TMP_Text toggleLabel;
     public string hideLabel = "隐藏幻灯片  (Tab)", showLabel = "显示幻灯片  (Tab)";
     public bool DeckVisible { get; private set; } = true;
@@ -943,18 +942,15 @@ Task 5's builder creates the deck canvas only; add a **second** canvas — `Chro
 Re-run the builder afterwards.
 - [ ] **Step 4: Verify the toggle in play mode (this is the user's core ask)**
 
-Via MCP play mode, assert:
-```csharp
-var p = GameObject.Find("Slides Canvas").GetComponent<SlidePresenter>();  // or wired ref
-// 1) deck visible -> frozen
-p.SetDeckVisible(true);  check Time.timeScale == 0 && slidesRoot.activeSelf
-// 2) hidden -> game playable, gameplay root present
-p.SetDeckVisible(false); check Time.timeScale == 1 && !slidesRoot.activeSelf
-// 3) back -> same slide, same revealed count
-```
-Then screenshot with the deck hidden to prove the game is visible, and again with it shown.
+`SlidePresenter` lives on the **Chrome Canvas**. In play mode, drive it via `execute_code` and assert, printing the raw values:
+1. `SetDeckVisible(true)` → `Time.timeScale == 0`, `slidesRoot.activeSelf == true`, and the Chrome Canvas **and its toggle button** are still active (that is what keeps the button clickable while the deck is up).
+2. `SetDeckVisible(false)` → `Time.timeScale == 1`, `slidesRoot.activeSelf == false`, and the toggle label switched to `显示幻灯片`.
+3. Move the player (`Rigidbody2D.velocity = …`, let a few frames pass) → the position must change, proving the game is genuinely unpaused.
+4. `SetDeckVisible(true)` again → the deck returns on the **same** `SlideIndex` and `RevealedBlocks` it had before, and `Time.timeScale == 0`.
 
-- [ ] **Step 5: Checkpoint.**
+Screenshot with the deck hidden (game + Chrome button visible) and with it shown. Then call `Toggle()` once and confirm it flips (that is the code path the button and `Tab` both use). Stop play mode and leave the console clean.
+
+- [ ] **Step 5: Commit** — `git add -A && git commit -m "feat(slides): presenter + input map + always-on toggle button (Tab)"`
 
 ---
 
