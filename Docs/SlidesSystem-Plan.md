@@ -82,7 +82,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from pptx_to_deck import convert, deck_key
 
-DECK = Path("/Users/gyk/Documents/Work/AY26-27/CAT105TC/Slides/W4 - L4 - Animations and Camera.pptx")
+DECK = Path("<slides-dir>/W4 - L4 - Animations and Camera.pptx")
 
 def test_key_slug():
     assert deck_key(DECK) == "W04_L4"
@@ -111,7 +111,7 @@ def test_no_empty_trailing_blocks():
 
 - [ ] **Step 2: Run it, expect failure**
 
-Run: `cd /Users/gyk/UnityProjects/CAT105TCDemo && uv run --with python-pptx --with pytest pytest tools/tests -q`
+Run: `cd <repo> && uv run --with python-pptx --with pytest pytest tools/tests -q`
 Expected: `ModuleNotFoundError: pptx_to_deck` (or import error).
 
 - [ ] **Step 3: Implement the converter**
@@ -211,7 +211,7 @@ def convert(pptx_path: Path, image_root: Path | None = None) -> dict:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("deck", nargs="*", help=".pptx files (default: all under --slides-dir)")
-    ap.add_argument("--slides-dir", default="/Users/gyk/Documents/Work/AY26-27/CAT105TC/Slides")
+    ap.add_argument("--slides-dir", default="<slides-dir>")
     ap.add_argument("--out-dir", default="Assets/Slides")
     args = ap.parse_args(argv)
     decks = [Path(p) for p in args.deck] or sorted(Path(args.slides_dir).glob("*.pptx"))
@@ -242,7 +242,7 @@ Expected: `4 passed`.
 
 - [ ] **Step 1: Generate only the W4 deck**
 
-Run: `uv run --with python-pptx python tools/pptx_to_deck.py "/Users/gyk/Documents/Work/AY26-27/CAT105TC/Slides/W4 - L4 - Animations and Camera.pptx"`
+Run: `uv run --with python-pptx python tools/pptx_to_deck.py "<slides-dir>/W4 - L4 - Animations and Camera.pptx"`
 Expected: `W04_L4   slides= 28 cjk= 0  <- W4 - L4 - Animations and Camera.pptx`
 
 - [ ] **Step 2: Verify the generated slide count against the source**
@@ -254,7 +254,7 @@ import sys, json; sys.path.insert(0,'tools')
 from pathlib import Path
 from pptx import Presentation
 from pptx_to_deck import convert
-p = Path('/Users/gyk/Documents/Work/AY26-27/CAT105TC/Slides/W4 - L4 - Animations and Camera.pptx')
+p = Path('<slides-dir>/W4 - L4 - Animations and Camera.pptx')
 src = len(Presentation(str(p)).slides); out = json.loads(Path('Assets/Slides/W04_L4.json').read_text())['slides']
 print('src', src, 'out', len(out), 'OK' if src == len(out) else 'MISMATCH')
 "

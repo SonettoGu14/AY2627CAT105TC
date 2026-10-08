@@ -145,7 +145,7 @@ def convert(pptx_path: Path, image_root: Path | None = None) -> dict:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("deck", nargs="*", help=".pptx files (default: all under --slides-dir)")
-    ap.add_argument("--slides-dir", default="/Users/gyk/Documents/Work/AY26-27/CAT105TC/Slides")
+    ap.add_argument("--slides-dir", default="Slides", help="folder scanned when no deck is given")
     ap.add_argument("--out-dir", default="Assets/Slides")
     args = ap.parse_args(argv)
     decks = [Path(p) for p in args.deck] or sorted(Path(args.slides_dir).glob("*.pptx"))
