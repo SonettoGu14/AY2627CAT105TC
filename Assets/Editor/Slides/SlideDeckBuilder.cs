@@ -21,13 +21,13 @@ public static class SlideDeckBuilder
     public static void BuildW04Slides()
     {
         BuildDeckScene("Assets/Slides/W04_L4.json", "Assets/Scenes/W04Slides.unity",
-                       "CAT105TC  \u00b7  Week 04  \u00b7  Animations and 2D Art");
+                       "CAT105TC  \u00b7  Week 04  \u00b7  Animations and 2D Art", true);
     }
 
-    public static void BuildDeckScene(string deckJsonPath, string scenePath, string header)
+    public static void BuildDeckScene(string deckJsonPath, string scenePath, string header, bool withGameplay)
     {
         // TMP essentials import asynchronously on a fresh clone; finish the build once ready.
-        if (!TmpBootstrap.Ensure(() => BuildDeckScene(deckJsonPath, scenePath, header))) return;
+        if (!TmpBootstrap.Ensure(() => BuildDeckScene(deckJsonPath, scenePath, header, withGameplay))) return;
 
         TextAsset deck = AssetDatabase.LoadAssetAtPath<TextAsset>(deckJsonPath);
         if (deck == null)
@@ -38,8 +38,21 @@ public static class SlideDeckBuilder
         }
 
         Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-        LabKit.MakeLight(null);
-        LabKit.MakeCamera(null, new Vector3(0f, 0f, -10f), 5f);
+
+        if (withGameplay)
+        {
+            // The platformer brings its own light and follow camera. The deck canvas is
+            // Screen Space Overlay, so it needs no camera of its own - and exactly one
+            // camera must exist in the scene.
+            PlayerController2D labPlayer;
+            Camera labCamera;
+            W04LabBuilder.BuildGameplay(null, out labPlayer, out labCamera);
+        }
+        else
+        {
+            LabKit.MakeLight(null);
+            LabKit.MakeCamera(null, new Vector3(0f, 0f, -10f), 5f);
+        }
 
         GameObject canvasGo = new GameObject("Slides Canvas",
             typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
