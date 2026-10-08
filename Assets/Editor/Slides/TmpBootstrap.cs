@@ -1,4 +1,3 @@
-using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,9 +9,12 @@ using UnityEngine;
 /// pass a continuation and it runs as soon as the import has completed and TMP_Settings loads.
 public static class TmpBootstrap
 {
+    // Upper bound on the number of editor frames we wait for the import to become visible.
+    const int MaxFrames = 60;
+
     static System.Action s_OnReady;
     static bool s_Importing;
-    static int s_Retries;
+    static int s_Frames;
 
     /// Returns true when TMP essentials are ready. When they are not, triggers the
     /// (asynchronous) package import and, if onReady is supplied, invokes it once ready.
@@ -25,44 +27,56 @@ public static class TmpBootstrap
         if (!s_Importing)
         {
             s_Importing = true;
+            s_Frames = 0;
             TMPro.TMP_PackageResourceImporter.ImportResources(true, false, false);
             AssetDatabase.importPackageCompleted += OnImportCompleted;
+            // The bound is anchored here, not to the callback: if importPackageCompleted never
+            // fires we must still time out instead of leaving s_Importing stuck true forever.
+            EditorApplication.delayCall += PollUntilReady;
         }
         return false;
     }
 
     static void OnImportCompleted(string packageName)
     {
-        // Only the essentials matter; the callback can fire for other packages too.
         if (packageName != "TMP Essential Resources") return;
 
         AssetDatabase.importPackageCompleted -= OnImportCompleted;
         AssetDatabase.Refresh();
-        FinishWhenReady();
+        // PollUntilReady (scheduled when the import was requested) observes readiness and finishes.
     }
 
-    static void FinishWhenReady()
+    /// Single driver for both outcomes. Runs from Ensure() time regardless of whether the
+    /// package callback fired, so the give-up path is always reachable.
+    static void PollUntilReady()
     {
-        if (!IsReady())
-        {
-            // The asset database may need another frame to expose the freshly imported
-            // Resources folder. Retry a bounded number of frames, then give up cleanly.
-            if (++s_Retries < 60) { EditorApplication.delayCall += FinishWhenReady; return; }
+        if (!s_Importing) return;   // already finished
 
-            s_Retries = 0;
+        if (IsReady())
+        {
+            AssetDatabase.importPackageCompleted -= OnImportCompleted;
             s_Importing = false;
+            s_Frames = 0;
+            Debug.Log("[Slides] imported TMP Essential Resources.");
+
+            System.Action pending = s_OnReady;
+            s_OnReady = null;
+            if (pending != null) pending();
+            return;
+        }
+
+        if (++s_Frames >= MaxFrames)
+        {
+            AssetDatabase.importPackageCompleted -= OnImportCompleted;
+            s_Importing = false;
+            s_Frames = 0;
+            s_OnReady = null;
             Debug.LogError("[Slides] TextMeshPro Essential Resources could not be imported. Run " +
                            "Window > TextMeshPro > Import TMP Essential Resources, then rebuild.");
             return;
         }
 
-        s_Retries = 0;
-        s_Importing = false;
-        Debug.Log("[Slides] imported TMP Essential Resources.");
-
-        System.Action pending = s_OnReady;
-        s_OnReady = null;
-        if (pending != null) pending();
+        EditorApplication.delayCall += PollUntilReady;
     }
 
     static bool IsReady()

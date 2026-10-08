@@ -38,10 +38,6 @@ Thumbs.db
 .omo/
 .superpowers/
 
-# ---- TextMeshPro Essential Resources (imported on demand by TmpBootstrap) ----
-Assets/TextMesh Pro/
-Assets/TextMesh Pro.meta
-
 # ---- Python (tools/) ----
 __pycache__/
 *.pyc
