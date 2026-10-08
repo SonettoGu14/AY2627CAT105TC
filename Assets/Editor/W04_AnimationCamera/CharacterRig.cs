@@ -36,6 +36,103 @@ public static class CharacterRig
 
         BuildPlayerController(idle, walk, run, jump, fall);
         BuildPropertyController();
+        BuildDemoAssets();
+    }
+
+    // ==================================================================================
+    //  W04 slide-demo assets
+    // ==================================================================================
+
+    public const string DemoStatesControllerPath = AnimFolder + "/DemoStates.controller";
+    public const string DemoExitControllerPath = AnimFolder + "/DemoExit.controller";
+
+    /// <summary>
+    /// Three visually distinct states (idle / walk / run poses), a controller that moves between
+    /// them on `Speed`, a second controller whose one transition carries a 0.9 exit time and a 0.6
+    /// duration (the transition demos read those numbers), and the clips the Animation demos need.
+    /// </summary>
+    /// <summary>
+    /// Make sure the demo clips and controllers exist. SlideDemoBuilder calls this, so building the
+    /// slides scene on its own never leaves an animator demo with a null controller - which would
+    /// look like a demo that does nothing rather than like an error.
+    /// </summary>
+    public static void EnsureDemoAssets()
+    {
+        BuildDemoAssets();
+    }
+
+    private static void BuildDemoAssets()
+    {
+        AnimationClip a = BuildSpriteClip("Demo_A", 6f, true, Pose("idle"));
+        AnimationClip b = BuildSpriteClip("Demo_B", 6f, true, Pose("walk0"), Pose("walk1"), Pose("walk2"), Pose("walk3"));
+        AnimationClip c = BuildSpriteClip("Demo_C", 10f, true, Pose("run0"), Pose("run1"), Pose("run2"));
+
+        // --- controller: A -(Speed>0.05)-> B -(Speed>0.6)-> C, and back ---
+        AssetDatabase.DeleteAsset(DemoStatesControllerPath);
+        AnimatorController states = AnimatorController.CreateAnimatorControllerAtPath(DemoStatesControllerPath);
+        states.AddParameter("Speed", AnimatorControllerParameterType.Float);
+        states.AddParameter("Flag", AnimatorControllerParameterType.Bool);
+        states.AddParameter("Trigger", AnimatorControllerParameterType.Trigger);
+        states.AddParameter("Switch", AnimatorControllerParameterType.Trigger);
+        AnimatorStateMachine sm = states.layers[0].stateMachine;
+        AnimatorState sA = sm.AddState("A", new Vector3(240, 0, 0));
+        AnimatorState sB = sm.AddState("B", new Vector3(240, 110, 0));
+        AnimatorState sC = sm.AddState("C", new Vector3(240, 220, 0));
+        sA.motion = a; sB.motion = b; sC.motion = c;
+        sm.defaultState = sA;
+        Link(sA, sB, AnimatorConditionMode.Greater, 0.05f, "Speed");
+        Link(sB, sA, AnimatorConditionMode.Less, 0.05f, "Speed");
+        Link(sB, sC, AnimatorConditionMode.Greater, 0.60f, "Speed");
+        Link(sC, sB, AnimatorConditionMode.Less, 0.60f, "Speed");
+
+        // --- controller: one transition with a long Exit Time and a real Duration ---
+        AssetDatabase.DeleteAsset(DemoExitControllerPath);
+        AnimatorController exit = AnimatorController.CreateAnimatorControllerAtPath(DemoExitControllerPath);
+        exit.AddParameter("Switch", AnimatorControllerParameterType.Trigger);
+        AnimatorStateMachine esm = exit.layers[0].stateMachine;
+        AnimatorState wait = esm.AddState("Wait", new Vector3(240, 0, 0));
+        AnimatorState done = esm.AddState("Done", new Vector3(240, 130, 0));
+        wait.motion = b; done.motion = c;
+        esm.defaultState = wait;
+        AnimatorStateTransition t = wait.AddTransition(done);
+        t.hasExitTime = true;
+        t.exitTime = 0.9f;            // must wait until the clip is 90% done
+        t.duration = 0.6f;            // then cross-fade over 0.6 s
+        t.hasFixedDuration = true;
+        t.AddCondition(AnimatorConditionMode.If, 0f, "Switch");
+
+        // --- clips the Animation demos point at ---
+        AnimationClip keyframes = NewDemoClip();
+        SetFloatCurve(keyframes, "", typeof(Transform), "m_LocalPosition.y", new[] { 0f, 0.5f, 1f }, new[] { 0f, 1.2f, 0f });
+        FinishDemoClip(keyframes, "Demo_Keyframes", true);
+
+        AnimationClip channels = NewDemoClip();
+        SetFloatCurve(channels, "", typeof(Transform), "m_LocalPosition.y", new[] { 0f, 0.5f, 1f }, new[] { 0f, 0.9f, 0f });
+        SetFloatCurve(channels, "", typeof(SpriteRenderer), "m_Color.r", new[] { 0f, 0.5f, 1f }, new[] { 1f, 0.25f, 1f });
+        SetFloatCurve(channels, "", typeof(AnimationDemo), "animValue", new[] { 0f, 0.5f, 1f }, new[] { 0f, 8f, 0f });
+        FinishDemoClip(channels, "Demo_Channels", true);
+
+        AnimationClip priority = NewDemoClip();
+        SetFloatCurve(priority, "", typeof(Transform), "m_LocalPosition.x", new[] { 0f, 0.5f, 1f }, new[] { -2f, 2f, -2f });
+        FinishDemoClip(priority, "Demo_Priority", true);
+    }
+
+    private static AnimationClip NewDemoClip()
+    {
+        AnimationClip clip = new AnimationClip();
+        clip.frameRate = 60;
+        return clip;
+    }
+
+    private static AnimationClip FinishDemoClip(AnimationClip clip, string name, bool loop)
+    {
+        AnimationClipSettings settings = AnimationUtility.GetAnimationClipSettings(clip);
+        settings.loopTime = loop;
+        AnimationUtility.SetAnimationClipSettings(clip, settings);
+        string path = AnimFolder + "/" + name + ".anim";
+        AssetDatabase.DeleteAsset(path);
+        AssetDatabase.CreateAsset(clip, path);
+        return AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
     }
 
     // ------------------------------------------------------------------ clips

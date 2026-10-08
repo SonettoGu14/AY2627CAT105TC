@@ -5,7 +5,13 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-/// Generates a slide-deck scene from a deck JSON. Week-independent: one [MenuItem] per deck.
+/// <summary>
+/// Generates a slide-deck scene from a deck JSON: the 1920x1080 deck, the navigation, the Chrome
+/// canvas with its always-on toggle button, and — behind the deck — the slide demos for that deck
+/// (see SlideDemoBuilder).
+///
+/// Week-independent: one [MenuItem] per deck.
+/// </summary>
 public static class SlideDeckBuilder
 {
     static readonly Color BgColor     = new Color32(0x0E, 0x14, 0x20, 0xFF);
@@ -17,6 +23,10 @@ public static class SlideDeckBuilder
 
     static readonly Vector2 TopLeft = new Vector2(0f, 1f);
     static readonly Vector2 TopRight = new Vector2(1f, 1f);
+    static readonly Vector2 BottomLeft = new Vector2(0f, 0f);
+
+    [System.Serializable]
+    private class DemoMapData { public string[] perSlide; }
 
     [MenuItem("CAT105TC/Slides/Build W04Slides")]
     public static void BuildW04Slides()
@@ -39,29 +49,12 @@ public static class SlideDeckBuilder
         }
 
         Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-
         WarnAboutUnrenderedContent(deck);
 
-        GameObject gameRoot = null;
-        if (withGameplay)
-        {
-            // The platformer brings its own light and follow camera. The deck canvas is
-            // Screen Space Overlay, so it needs no camera of its own - and exactly one
-            // camera must exist in the scene.
-            // It lives under one root so SlidePresenter can deactivate the whole game while the
-            // deck is up: Time.timeScale alone does not stop Update-based input, which would let
-            // Space (advance a bullet) latch a jump that fires as soon as the deck hides.
-            gameRoot = new GameObject("Gameplay Root");
-            PlayerController2D labPlayer;
-            Camera labCamera;
-            W04LabBuilder.BuildGameplay(gameRoot.transform, out labPlayer, out labCamera);
-        }
-        else
-        {
-            LabKit.MakeLight(null);
-            LabKit.MakeCamera(null, new Vector3(0f, 0f, -10f), 5f);
-        }
+        // --- the demos that appear behind the deck, one stage each ----------------------
+        DemoStage demoStage = SlideDemoBuilder.Build(null, withGameplay);
 
+        // --- the deck canvas -----------------------------------------------------------
         GameObject canvasGo = new GameObject("Slides Canvas",
             typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
         canvasGo.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
@@ -90,28 +83,23 @@ public static class SlideDeckBuilder
         view.subtitleText = subtitleText;
         view.bodyText = bodyText;
 
-        // --- navigation (deck canvas) -------------------------------------------------
-        // Labels are ASCII on purpose: LiberationSans SDF has no arrow/CJK glyphs.
+        // --- navigation (deck canvas) --------------------------------------------------
         Vector2 bottomRight = new Vector2(1f, 0f);
         TMP_Text pageLabel = TmpText(root, "PageLabel", bottomRight,
             new Vector2(-300f, 40f), new Vector2(140f, 40f), 28f, MutedColor, TextAlignmentOptions.Right);
-        Button nextButton = UiButton(root, "NextButton", bottomRight,
-            new Vector2(-40f, 32f), new Vector2(110f, 56f), BarColor);
+        Button nextButton = UiButton(root, "NextButton", bottomRight, new Vector2(-40f, 32f), new Vector2(110f, 56f), BarColor);
         TmpText(nextButton.transform, "Label", new Vector2(0.5f, 0.5f), Vector2.zero,
             new Vector2(110f, 56f), 34f, TitleColor, TextAlignmentOptions.Center).text = ">";
-        Button prevButton = UiButton(root, "PrevButton", bottomRight,
-            new Vector2(-170f, 32f), new Vector2(110f, 56f), BarColor);
+        Button prevButton = UiButton(root, "PrevButton", bottomRight, new Vector2(-170f, 32f), new Vector2(110f, 56f), BarColor);
         TmpText(prevButton.transform, "Label", new Vector2(0.5f, 0.5f), Vector2.zero,
             new Vector2(110f, 56f), 34f, TitleColor, TextAlignmentOptions.Center).text = "<";
 
-        // Centred jump-to-slide panel. SlideNavigator fills it with the numbered grid
-        // at runtime; it is saved inactive and only shown by ToggleJumpPanel().
         Image jumpPanelImage = UiImage(root, "JumpPanel", new Vector2(0.5f, 0.5f),
             Vector2.zero, new Vector2(1400f, 820f), new Color32(0x10, 0x18, 0x28, 0xFF));
         GameObject jumpPanel = jumpPanelImage.gameObject;
         jumpPanel.SetActive(false);
 
-        view.pageText = pageLabel;               // the navigator owns the page indicator
+        view.pageText = pageLabel;
 
         SlideNavigator navigator = canvasGo.AddComponent<SlideNavigator>();
         navigator.player = player;
@@ -120,13 +108,24 @@ public static class SlideDeckBuilder
         navigator.pageLabel = pageLabel;
         navigator.jumpPanel = jumpPanel;
 
-        // Persistent listeners serialise into the saved scene; AddListener does not.
         UnityEditor.Events.UnityEventTools.AddPersistentListener(nextButton.onClick, navigator.NextClicked);
         UnityEditor.Events.UnityEventTools.AddPersistentListener(prevButton.onClick, navigator.PrevClicked);
 
-        // --- Chrome canvas -----------------------------------------------------------
-        // A second, always-on canvas that stays visible when the deck is hidden, so the
-        // toggle button keeps working. It must NOT be a child of the deck canvas.
+        // --- which demos belong to which slide -----------------------------------------
+        SlideDemoMap demoMap = canvasGo.AddComponent<SlideDemoMap>();
+        string mapPath = deckJsonPath.Substring(0, deckJsonPath.Length - ".json".Length) + ".demos.json";
+        TextAsset mapAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(mapPath);
+        if (mapAsset != null)
+        {
+            DemoMapData data = JsonUtility.FromJson<DemoMapData>(mapAsset.text);
+            if (data != null && data.perSlide != null) demoMap.perSlide = data.perSlide;
+        }
+        else
+        {
+            Debug.LogWarning("[SlideDeckBuilder] no demo map at " + mapPath + " - no demos will show.");
+        }
+
+        // --- Chrome canvas (always on top; survives hiding the deck) ---------------------
         GameObject chromeGo = new GameObject("Chrome Canvas",
             typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
         Canvas chromeCanvas = chromeGo.GetComponent<Canvas>();
@@ -144,19 +143,21 @@ public static class SlideDeckBuilder
 
         SlidePresenter presenter = chromeGo.AddComponent<SlidePresenter>();
         presenter.slidesRoot = canvasGo;
-        presenter.gameRoot = gameRoot;               // deactivated while the deck is up
+        presenter.player = player;
+        presenter.demoStage = demoStage;
+        presenter.demoMap = demoMap;
         presenter.toggleLabel = toggleLabel;
-        toggleLabel.text = presenter.hideLabel;      // deck starts visible
-        // AddListener only registers a runtime callback that is lost on scene reload;
-        // a persistent listener is what actually serialises into the saved scene.
+        toggleLabel.text = presenter.hideLabel;
         UnityEditor.Events.UnityEventTools.AddPersistentListener(toggleButton.onClick, presenter.Toggle);
+
+        DemoReadout readout = BuildDemoReadout(chromeGo.transform, demoStage, presenter);
 
         SlideInput slideInput = chromeGo.AddComponent<SlideInput>();
         slideInput.player = player;
         slideInput.presenter = presenter;
         slideInput.navigator = navigator;
+        slideInput.demoStage = demoStage;
 
-        // UI buttons need an EventSystem to receive clicks; the deck scene has none.
         if (Object.FindObjectOfType<UnityEngine.EventSystems.EventSystem>() == null)
         {
             new GameObject("EventSystem",
@@ -167,7 +168,40 @@ public static class SlideDeckBuilder
         EditorSceneManager.SaveScene(scene, scenePath);
         LabKit.AddSceneToBuildSettings(scenePath);
         AssetDatabase.SaveAssets();
-        Debug.Log("[SlideDeckBuilder] built " + scenePath + " from " + deckJsonPath);
+        Debug.Log("[SlideDeckBuilder] built " + scenePath + " from " + deckJsonPath +
+                  " (" + (demoStage.slots != null ? demoStage.slots.Length : 0) + " demos)");
+    }
+
+    // ------------------------------------------------------------------ demo readout panel
+
+    private static DemoReadout BuildDemoReadout(Transform chrome, DemoStage stage, SlidePresenter presenter)
+    {
+        RectTransform panelRect = UiPanelRect(chrome, "DemoReadout", BottomLeft, BottomLeft,
+            new Vector2(28f, 28f), new Vector2(780f, 360f));
+        Image bg = panelRect.gameObject.AddComponent<Image>();
+        bg.sprite = LabKit.White;
+        bg.color = new Color32(0x0A, 0x0F, 0x18, 0xE6);
+        bg.raycastTarget = false;
+
+        TMP_Text title = TmpText(panelRect, "Title", TopLeft, new Vector2(24f, -18f), new Vector2(620f, 40f),
+            26f, AccentColor, TextAlignmentOptions.TopLeft);
+        TMP_Text index = TmpText(panelRect, "Index", new Vector2(1f, 1f), new Vector2(-24f, -20f), new Vector2(320f, 30f),
+            20f, MutedColor, TextAlignmentOptions.TopRight);
+        TMP_Text body = TmpText(panelRect, "Body", TopLeft, new Vector2(24f, -66f), new Vector2(732f, 240f),
+            21f, BodyColor, TextAlignmentOptions.TopLeft);
+        TMP_Text keys = TmpText(panelRect, "Keys", new Vector2(0f, 0f), new Vector2(24f, 16f), new Vector2(732f, 40f),
+            20f, new Color32(0x7C, 0xE3, 0x8B, 0xFF), TextAlignmentOptions.BottomLeft);
+
+        DemoReadout readout = panelRect.gameObject.AddComponent<DemoReadout>();
+        readout.stage = stage;
+        readout.presenter = presenter;
+        readout.panel = panelRect.gameObject;
+        readout.titleText = title;
+        readout.indexText = index;
+        readout.readoutText = body;
+        readout.keysText = keys;
+        panelRect.gameObject.SetActive(false);
+        return readout;
     }
 
     // ------------------------------------------------------------------ helpers
@@ -178,8 +212,6 @@ public static class SlideDeckBuilder
     ///
     /// NB: JsonUtility materialises a JSON `null` object field as a default *instance*, so a plain
     /// `!= null` test reports every slide as having an image and a table. Detect real content.
-    /// (`layout == "twoColumn"` is deliberately not warned about: it renders single-column without
-    /// losing anything, and is documented in the README instead.)
     /// </summary>
     static void WarnAboutUnrenderedContent(TextAsset deck)
     {
@@ -215,6 +247,19 @@ public static class SlideDeckBuilder
         return rt;
     }
 
+    static RectTransform UiPanelRect(Transform parent, string name, Vector2 anchor, Vector2 pivot, Vector2 pos, Vector2 size)
+    {
+        GameObject go = new GameObject(name, typeof(RectTransform));
+        RectTransform rt = (RectTransform)go.transform;
+        rt.SetParent(parent, false);
+        rt.anchorMin = anchor;
+        rt.anchorMax = anchor;
+        rt.pivot = pivot;
+        rt.anchoredPosition = pos;
+        rt.sizeDelta = size;
+        return rt;
+    }
+
     static Image FullScreen(Transform parent, string name, Color color)
     {
         GameObject go = new GameObject(name, typeof(RectTransform));
@@ -235,7 +280,7 @@ public static class SlideDeckBuilder
         RectTransform rt = Rect(parent, name, anchor, pos, size);
         Image img = rt.gameObject.AddComponent<Image>();
         img.color = color;
-        img.raycastTarget = true;                    // the button must receive clicks
+        img.raycastTarget = true;
         Button button = rt.gameObject.AddComponent<Button>();
         button.targetGraphic = img;
         return button;
