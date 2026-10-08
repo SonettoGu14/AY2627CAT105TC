@@ -8,6 +8,15 @@ Assets/Scripts/
   Common/                     infrastructure used by every week - NOT lecture material
     LabHud.cs                 status bar, live input visualiser, camera debug panel, checklist
 
+  Slides/                     the presentation system - shared across all weeks, NOT lecture material
+    Core/                       engine-free: SlideData (JSON shapes) + SlideCursor (state machine)
+    SlideDeckPlayer.cs          parses a deck, owns the cursor, raises Changed
+    SlideView.cs                renders one slide into five TMP fields
+    SlidePresenter.cs           shows/hides the deck; owns Time.timeScale
+    SlideInput.cs               the key map (Tab / arrows / Space / G)
+    SlideNavigator.cs           prev/next buttons, page label, jump-to-slide grid
+    README.md                   keys, regeneration, and how to add a week
+
   W02_VariablesConditionals/  Lecture 2  "C# Fundamentals (1): Variables and Conditionals"
     VariablesDemo.cs            the four core types (string / int / float / bool),
                                 the Debug.Log / LogWarning / LogError levels
@@ -56,6 +65,9 @@ Assets/Editor/
   W04_AnimationCamera/
     W04LabBuilder.cs           builds W4Lab
     CharacterRig.cs            the character AnimationClips + AnimatorControllers
+  Slides/
+    TmpBootstrap.cs            imports TMP Essential Resources once (async-safe)
+    SlideDeckBuilder.cs        deck JSON -> a 1920x1080 scene (currently W04Slides)
 ```
 
 ## The rules
@@ -72,6 +84,9 @@ Assets/Editor/
    `CAT105TC ▸ Wnn ... ▸ Build`.
 6. Dependency direction: `Common` may reference any week; a week may reference **earlier**
    weeks only (W4 → W3 is fine, W3 → W4 is not).
+7. `Slides/` is presentation infrastructure, not lecture material. It may reference any week's
+   components (the deck scene embeds the W4 gameplay behind it); no week should reference it.
+   Its unit tests live in `Assets/Tests/EditMode/`, whose asmdef can only see `Slides/Core/`.
 
 ## Menu
 
@@ -80,7 +95,8 @@ Assets/Editor/
 | `CAT105TC ▸ Common ▸ Rebuild shared assets` | layers, tags, generated sprites, physics materials |
 | `CAT105TC ▸ W03 Physics2D ▸ Build W3 Lab` | rebuilds `Assets/Scenes/W3Lab.unity` |
 | `CAT105TC ▸ W04 Animation & Camera ▸ Build W4 Lab` | rebuilds `Assets/Scenes/W4Lab.unity` |
-| `CAT105TC ▸ Build all current labs` | the two above |
+| `CAT105TC ▸ Slides ▸ Build W04Slides` | rebuilds the W4 deck scene (needs `Assets/Slides/W04_L4.json`) |
+| `CAT105TC ▸ Build all current labs` | the two lab builders above |
 
 ## Assets
 
@@ -91,6 +107,10 @@ Assets/Editor/
 | `Assets/Animations/W04_AnimationCamera/` | W4 (the AnimationClips + AnimatorControllers) |
 | `Assets/Scenes/W2Lab.unity` | W2 - the legacy 3D player scene (was `PlayerTest.unity`), hand-made, not builder-generated |
 | `Assets/Scenes/W3Lab.unity`, `W4Lab.unity` | the 2D lab scenes, regenerated from `Editor/Wnn_.../` |
+| `Assets/Slides/<key>.json` | generated decks (source: the course `.pptx` files) |
+| `Assets/Scenes/W04Slides.unity` | the W4 deck scene — the slides, with the W4 game behind them |
+| `Assets/TextMesh Pro/` | TMP Essential Resources, committed (the deck scene references its font by GUID) |
+| `Captures/` | verification screenshots — not Unity assets, kept as evidence |
 
 ## Adding W5
 
@@ -99,3 +119,5 @@ Assets/Editor/
    `[MenuItem("CAT105TC/W05 Topic/Build W5 Lab")]`.
 3. `Assets/Animations/W05_Topic/` (and `Assets/Scenes/W5Lab.unity`) if it needs its own.
 4. Reuse `LabKit` (scene helpers + HUD) and earlier weeks' components where the lecture does.
+5. If the week teaches from a deck: convert the `.pptx` and add a
+   `CAT105TC ▸ Slides ▸ Build WnnSlides` menu item — see `Assets/Scripts/Slides/README.md`.
