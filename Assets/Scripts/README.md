@@ -119,6 +119,10 @@ Assets/Scripts/
     GoalZone2D.cs               end-of-level trigger
     MovingPlatform2D.cs         kinematic platform moved by code
     PropertyAnimationDemo2D.cs  animator.Play(); position/scale/colour animation
+    W4PlayerController.cs       the student handout: a self-contained standard 2D controller
+                                (W3 physics + W4 animation, bilingual comments). Not used by a
+                                lab - it is the file students are given, so it references nothing
+                                from this project. Drives the Animator params `speed` / `isJumping`.
     SlideSnippets_W04.cs        the literal slide code
 ```
 
