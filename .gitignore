@@ -37,3 +37,7 @@ Thumbs.db
 .codegraph
 .omo/
 .superpowers/
+
+# ---- Python (tools/) ----
+__pycache__/
+*.pyc

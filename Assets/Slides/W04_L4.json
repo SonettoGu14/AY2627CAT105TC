@@ -1,0 +1,1092 @@
+{
+  "key": "W04_L4",
+  "title": "Animations and Camera",
+  "subtitle": "",
+  "source": "W4 - L4 - Animations and Camera.pptx",
+  "generated": "2026-10-08T09:53:15",
+  "slides": [
+    {
+      "index": 1,
+      "layout": "title",
+      "title": "Animations and 2D Art",
+      "subtitle": "Lecture 4",
+      "blocks": [],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 2,
+      "layout": "content",
+      "title": "Review",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Physics 2D Controller",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "A better way for Ground Detection",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "Best practice for component design",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 3,
+      "layout": "content",
+      "title": "Raycast",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "You can use the Raycast function to emit a ray in a certain direction in the scene and get the object it collides with.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "An example: A 2-meter ray can be emitted forward from the player\u2019s position every frame. If the ray collides with a wall, the player cannot move forward anymore.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "There are two participants in raycasting: the one emitting the ray (A) and the one being collided with (B).",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "The code is written here for A;",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "A does not need a collider. B needs to have a collider.",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 4,
+      "layout": "content",
+      "title": "Physics2D.Raycast function",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Physics2D.Raycast is a function for implementing ray detection, and it stops when it collides with the first object.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "It has an awful lot of optional parameters, and the more commonly used ones are:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "RaycastHit2D Raycast(Vector2 origin, Vector2 direction, float distance, int layerMask)",
+          "kind": "bullet"
+        },
+        {
+          "level": 2,
+          "text": "origin: the starting position of the ray",
+          "kind": "bullet"
+        },
+        {
+          "level": 2,
+          "text": "direction: ray direction",
+          "kind": "bullet"
+        },
+        {
+          "level": 2,
+          "text": "distance: ray length",
+          "kind": "bullet"
+        },
+        {
+          "level": 2,
+          "text": "layermask: the layer involved in detection",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "</> Try using Raycast!",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 5,
+      "layout": "content",
+      "title": "Content",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Filed Modifier",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Instantiate and Destroy",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "2D Rendering Components: SpriteRenderer and SpriteMask",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Sprite Editor",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "Animation",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Animator",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 6,
+      "layout": "content",
+      "title": "Field Modifier",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Recall: A field is another name for a variable in a class",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Unity provides some field modifiers that change the way variables are displayed in the engine",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Common Modifiers:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "[SeerializeField]\tAllow variables to be displayed in Editor",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "[HideInInspector]\tMake public variables not displayed in the Editor",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "[Range(x,y)]\t\tMake a variable display as a slider instead of an box",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "</> Modify the 2D Controller with field modifiers",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 7,
+      "layout": "content",
+      "title": "2D Rendering: SpriteRenderer Component",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Used to display an image",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Properties: Color, Flip, Material, etc",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Note that the Color here refers to dyeing! The color will only get darker, not lighter",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "Sorting Layers",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "This represents the display hierarchy of objects. The higher the Sorting Layer, the \"more front\" the object is.",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Note that this is completely different from the GameObject's layer!",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Layer is used to classify objects, while Sorting Layer is used to control the display order.",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 8,
+      "layout": "content",
+      "title": "2D Rendering: SpriteMask Component",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Used to implement image masking",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Make some images only display within the range of another image",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "Usage: Add the SpriteMask component to the masking object and set the MaskInteraction option in SpriteRenderer of themasked object.",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 9,
+      "layout": "content",
+      "title": "Sprite and Sprite Editor",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Click on an image in the Project window to view its information",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Each image has a type, such as Default, Sprite, Cursor, Normal Map, etc.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Note that if you want to use it in SpriteRenderer, you must select the Sprite type",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Each image has a size limit (default is 2048x2048). You can roughly blur an image by modifying this limit. When importing a particularly large image (exceeding 2048), don't forget to increase the limit.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "Sprite Editor is used to edit images",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Common functions: Slicing",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 10,
+      "layout": "content",
+      "title": "Handling Sprites in Code",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Sprite is also a class",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "You can modify the image on SpriteRenderer in the code",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "</> Try adding the function of changing images in the 2D controller!",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 11,
+      "layout": "content",
+      "title": "Unity's animation system",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Open the Animation window: Windows>Animation",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Function: Edit animations, create new animations",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Each animation is an AnimationClip, stored in the Assets folder",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "The actual component that plays animations on an object is the Animator component",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Open the Animator window: Windows>Animator",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Function: Manage the playback order and logic of animations",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 12,
+      "layout": "content",
+      "title": "Edit Animation",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Animation is defined by keyframes. We only need to modify the values of components on an object at several keyframes, and Unity will create a smooth transition between them to form an animation",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "What values can animations on an object affect?",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "All values that can be modified in the object's Inspector (position, color, variables we wrote ourselves, etc.)",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "All values on the child objects of this object",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Note: Animations cannot affect child objects that already have an Animator component!",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Only one animation can play on an object at a time",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 13,
+      "layout": "content",
+      "title": "Edit Animation",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Using the Animation editor:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Select the desired frame",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Click the record button",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Adjust the values on the object's components",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "</> Let's create an animation that changes the position, rotation, scale and color of an object!",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 14,
+      "layout": "content",
+      "title": "Animation priority",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "The priority of animation is higher than that of code!",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "For example: If an object is playing an animation that controls its position, no matter how we change its position in the code, it will not take effect",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "(Many \"bugs\" are caused by this)",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "</> Give it a try!",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 15,
+      "layout": "content",
+      "title": "Manage Animation: Animator",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "The Animator component is used to manage the order and logic of animation playback",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Every object with animation has an AnimatorController (which can be viewed in the Animator component)",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "You can view and edit this AnimatorController in the Animator window",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "There are several important components in the Animator window:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "States",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Transitions",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Variables",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Layers",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 16,
+      "layout": "content",
+      "title": "Animator: States",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Each State represents an AnimationClip. When the Animator reaches a State, the animation corresponding to that State will be played",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "When a new animation is created, a State with the same name is automatically generated",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "View State information: Motion, Speed, Transitions",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "The orange State is the starting State",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "The Animator will directly play the animation of this State when the game starts running. An Animator has exactly one starting State.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "You can right-click to select any State to be the starting State.",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 17,
+      "layout": "content",
+      "title": "Animator: Transitions",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Transition defines the way we switch/transition between States",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "The white arrow connecting two States is a Transition",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "You can right-click to choose to create a Transition between any two States",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "View the properties of Transition:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Exit Time \u2013 At what time does the current clip start transitioning to the next clip?",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Transition Duration \u2013 How long does the transition take?",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Interruption Source \u2013 What other transitions can interrupt this transition?",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 18,
+      "layout": "content",
+      "title": "Animator: Variables",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Variables in the Animator are used to control the occurrence of Transitions. For example, the transition to the jump animation should only happen when we press the spacebar",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Variables can be managed in the panel on the left",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Animator offers several variable types: float, int, bool, trigger. Among them, bool and trigger are the most commonly used",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 19,
+      "layout": "content",
+      "title": "Animator: Variables",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "bool: that is, a boolean value. It can be set to true or false",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "trigger: is a boolean value that is true for an instant. It then becomes invalid immediately afterwards",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "You can add variable conditions at the bottom of the Transition panel. When the conditions are not met, the Animator will stay in the current State; otherwise, it will execute the Transition",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "</> Let's add variable conditions to the transition!",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 20,
+      "layout": "content",
+      "title": "Animator: Scripting",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "We can modify the values of variables in Animator within the code to control the playback of animations",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Common APIs:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "animator.SetBool(string name, bool value)",
+          "kind": "code"
+        },
+        {
+          "level": 1,
+          "text": "animator.SetTrigger(string name)",
+          "kind": "code"
+        },
+        {
+          "level": 1,
+          "text": "(Why is it written as animator here instead of Animator?)",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "</> Use these APIs to control animations!",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 21,
+      "layout": "content",
+      "title": "Animator: Scripting",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Easier animation playback:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "animator.Play(string stateName)",
+          "kind": "code"
+        },
+        {
+          "level": 0,
+          "text": "This method is suitable for situations where smooth transitions are not required (such as 2D frame animations)",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Overload:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "animator.Play(string stateName, int layer, float normalizedTime)",
+          "kind": "code"
+        },
+        {
+          "level": 1,
+          "text": "For example, \"play a state from the beginning\": \"animator.Play(stateName, 0, 0)\"",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 22,
+      "layout": "content",
+      "title": "Animation production practice",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Use Unity's animation system to try creating some animations and connect them!",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 23,
+      "layout": "content",
+      "title": "Camera",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "The Camera component provides the function of viewing from a position at an angle and rendering the seen image on the screen or texture.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Cameras have two main modes: Perspective and Orthographic",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "Perspective Camera:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Objects appear larger when close and smaller when far away, which is generally used in 3D games.",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "The field of view is a cone (viewing frustum). Objects between the Near Plane and Far Plane can be seen.",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Field of View: the width of the viewing frustum",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 24,
+      "layout": "twoColumn",
+      "title": "Camera",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Orthographic Camera:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Objects appear the same size regardless of their distance, and this is generally used in 2D games.",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "The field of view is a rectangular prism.",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Size: the size of the field of view",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 25,
+      "layout": "content",
+      "title": "Camera: Color and Rendering",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "A scene can have more than one camera!",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "The Camera component has the following common parameters related to color rendering:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Clear Flags: Defines what the camera needs to display in empty areas (where there are no objects)",
+          "kind": "bullet"
+        },
+        {
+          "level": 2,
+          "text": "Skybox: Display the skybox",
+          "kind": "bullet"
+        },
+        {
+          "level": 2,
+          "text": "Solid Color: Displays a single color",
+          "kind": "bullet"
+        },
+        {
+          "level": 2,
+          "text": "Depth Only: Displays nothing (transparent)",
+          "kind": "bullet"
+        },
+        {
+          "level": 2,
+          "text": "Don\u2019t Clear: Keep the last frame",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 26,
+      "layout": "content",
+      "title": "Camera: Color and Rendering",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "BackgroundColor: The color displayed in the background when in Clear Flags mode",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Culling Mask: The layer rendered by this camera",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Depth: the layer order of the camera itself; cameras with a larger Depth will be rendered on top",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "</> How to render a scene with two cameras together? What are the benefits of doing this?",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 27,
+      "layout": "content",
+      "title": "The camera follows the character",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "The scene and angle seen by the camera are defined by the position and rotation of the camera object. (Why is scale not useful?)",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "How to make the camera follow the character?",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Just make the camera move with the character every frame",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "Idea:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Record the Z-distance between the camera and the character at the beginning (why?)",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Change the camera's position according to the character's position in each frame (is there a better way?)",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "</> Let's implement the camera following the character!",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 28,
+      "layout": "title",
+      "title": "The End",
+      "subtitle": "Lecture 4",
+      "blocks": [],
+      "table": null,
+      "image": null
+    }
+  ]
+}
