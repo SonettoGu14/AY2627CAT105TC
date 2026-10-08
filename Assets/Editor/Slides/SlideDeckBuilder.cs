@@ -16,6 +16,7 @@ public static class SlideDeckBuilder
     static readonly Color AccentColor = new Color32(0x6F, 0xA8, 0xFF, 0xFF);
 
     static readonly Vector2 TopLeft = new Vector2(0f, 1f);
+    static readonly Vector2 TopRight = new Vector2(1f, 1f);
 
     [MenuItem("CAT105TC/Slides/Build W04Slides")]
     public static void BuildW04Slides()
@@ -82,6 +83,44 @@ public static class SlideDeckBuilder
         view.subtitleText = subtitleText;
         view.bodyText = bodyText;
 
+        // --- Chrome canvas -----------------------------------------------------------
+        // A second, always-on canvas that stays visible when the deck is hidden, so the
+        // toggle button keeps working. It must NOT be a child of the deck canvas.
+        GameObject chromeGo = new GameObject("Chrome Canvas",
+            typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+        Canvas chromeCanvas = chromeGo.GetComponent<Canvas>();
+        chromeCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        chromeCanvas.sortingOrder = 10;
+        CanvasScaler chromeScaler = chromeGo.GetComponent<CanvasScaler>();
+        chromeScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        chromeScaler.referenceResolution = new Vector2(1920f, 1080f);
+        chromeScaler.matchWidthOrHeight = 0.5f;
+
+        Button toggleButton = UiButton(chromeGo.transform, "ToggleDeckButton", TopRight,
+            new Vector2(-40f, -40f), new Vector2(180f, 52f), BarColor);
+        TMP_Text toggleLabel = TmpText(toggleButton.transform, "Label", new Vector2(0.5f, 0.5f),
+            Vector2.zero, new Vector2(180f, 52f), 26f, TitleColor, TextAlignmentOptions.Center);
+
+        SlidePresenter presenter = chromeGo.AddComponent<SlidePresenter>();
+        presenter.slidesRoot = canvasGo;
+        presenter.toggleLabel = toggleLabel;
+        toggleLabel.text = presenter.hideLabel;      // deck starts visible
+        // AddListener only registers a runtime callback that is lost on scene reload;
+        // a persistent listener is what actually serialises into the saved scene.
+        UnityEditor.Events.UnityEventTools.AddPersistentListener(toggleButton.onClick, presenter.Toggle);
+
+        SlideInput slideInput = chromeGo.AddComponent<SlideInput>();
+        slideInput.player = player;
+        slideInput.presenter = presenter;
+
+        // UI buttons need an EventSystem to receive clicks; the deck scene has none.
+        if (Object.FindObjectOfType<UnityEngine.EventSystems.EventSystem>() == null)
+        {
+            new GameObject("EventSystem",
+                typeof(UnityEngine.EventSystems.EventSystem),
+                typeof(UnityEngine.EventSystems.StandaloneInputModule));
+        }
+
         EditorSceneManager.SaveScene(scene, scenePath);
         LabKit.AddSceneToBuildSettings(scenePath);
         AssetDatabase.SaveAssets();
@@ -116,6 +155,17 @@ public static class SlideDeckBuilder
         img.color = color;
         img.raycastTarget = false;
         return img;
+    }
+
+    static Button UiButton(Transform parent, string name, Vector2 anchor, Vector2 pos, Vector2 size, Color color)
+    {
+        RectTransform rt = Rect(parent, name, anchor, pos, size);
+        Image img = rt.gameObject.AddComponent<Image>();
+        img.color = color;
+        img.raycastTarget = true;                    // the button must receive clicks
+        Button button = rt.gameObject.AddComponent<Button>();
+        button.targetGraphic = img;
+        return button;
     }
 
     static Image UiImage(Transform parent, string name, Vector2 anchor, Vector2 pos, Vector2 size, Color color)
