@@ -116,7 +116,7 @@ Chrome Canvas            (always on top)
 | `Space` / left-click | next bullet; when the last bullet is shown → next slide | jump (the game) |
 | `G` | toggle jump panel | — |
 | `Tab` | hide deck → game | show deck |
-| `R` | — | restart the level |
+| `R` | — | **not available in the deck scene** — `R` (and `T`/`C`/`H`) belong to `LabHud`, which `W04Slides` deliberately omits; they still work in `W4Lab` |
 
 **Toggle behaviour** — the important part:
 

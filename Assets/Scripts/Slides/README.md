@@ -18,7 +18,7 @@ without switching applications.
 | `SlideNavigator.cs` | prev/next buttons, page label, jump-to-slide grid |
 | `Assets/Editor/Slides/TmpBootstrap.cs` | imports TMP Essential Resources once (async-safe) |
 | `Assets/Editor/Slides/SlideDeckBuilder.cs` | deck JSON → scene |
-| `Assets/Tests/EditMode/` | `SlideCursorTests` (7) + `DeckLoadTests` (4) |
+| `Assets/Tests/EditMode/` | `SlideCursorTests` (10) + `DeckLoadTests` (4) |
 | `Assets/Slides/<key>.json` | a generated deck |
 | `Assets/Scenes/W04Slides.unity` | a generated scene |
 
@@ -83,7 +83,7 @@ is dropped silently. W04 has none of them; the whole course has 2 images and 3 t
 ## Known gaps
 
 * **The runtime has no automated tests.** Only `SlideCursor` and the deck-load contract are covered
-  (11 EditMode tests). `SlideView`, `SlideDeckPlayer`, `SlidePresenter`, `SlideInput` and
+  (14 EditMode tests: 10 cursor + 4 deck-load). `SlideView`, `SlideDeckPlayer`, `SlidePresenter`, `SlideInput` and
   `SlideNavigator` live in the predefined `Assembly-CSharp`, which a test asmdef cannot reference —
   so the presenter ↔ gameplay interaction is only verified by hand. That gap is exactly how the
   "Space latches a jump" bug reached the final review. Closing it means giving
