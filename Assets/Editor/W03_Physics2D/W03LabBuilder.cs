@@ -7,18 +7,18 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// W3 lecture content - "Physics in Unity".
 ///
-/// Builds Assets/Scenes/W3Lab.unity: a walk-through playground with six labelled review
+/// Builds Assets/Scenes/W03Lab.unity: a walk-through playground with six labelled review
 /// stations (Collision2D + Tag, Trigger2D, Raycast + LayerMask, PlatformEffector2D,
 /// Rigidbody2D modes, statics + Physics Material) and a gamified checklist.
 ///
 /// The player here is a plain sprite driven by PlayerController2D - deliberately WITHOUT
-/// an Animator, because animation is not taught until W4. The W4 lab calls
+/// an Animator, because animation is not taught until W4. The W04 lab calls
 /// <see cref="CreatePlayer"/> and then adds its own Animator on top, which is exactly the
 /// "W4 reviews W3, then extends it" story the lecture tells.
 /// </summary>
 public static class W03LabBuilder
 {
-    [MenuItem("CAT105TC/W03 Physics2D/Build W3 Lab (Physics Playground)")]
+    [MenuItem("CAT105TC/W03 Physics2D/Build W03 Lab (Physics Playground)")]
     public static void BuildMenu()
     {
         Build();
@@ -267,17 +267,17 @@ public static class W03LabBuilder
 
         // --- HUD ------------------------------------------------------------------------
         LabHud hud;
-        LabKit.BuildHud("CAT105TC  W3 Lab  -  Physics 2D Playground", true, out hud);
+        LabKit.BuildHud("CAT105TC  W03 Lab  -  Physics 2D Playground", true, out hud);
         hud.player = player;
         hud.targetCamera = cam;
         hud.annotationRoot = annotations;
         hud.totalCoins = 2;
         hud.help = "A / D  move      Space  jump\nS + Space  drop through one-way platform\nWalk through all six review stations\nR  restart      T  labels      C  camera     H  help";
 
-        EditorSceneManager.SaveScene(scene, LabKit.W3ScenePath);
-        LabKit.AddSceneToBuildSettings(LabKit.W3ScenePath);
+        EditorSceneManager.SaveScene(scene, LabKit.W03ScenePath);
+        LabKit.AddSceneToBuildSettings(LabKit.W03ScenePath);
         AssetDatabase.SaveAssets();
-        Debug.Log("[W03LabBuilder] W3Lab built.");
+        Debug.Log("[W03LabBuilder] W03Lab built.");
     }
 
     public static GameObject MakeKillZone(Transform parent, Vector3 pos, float w, float h, PlayerController2D player)

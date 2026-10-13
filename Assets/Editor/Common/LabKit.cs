@@ -23,8 +23,8 @@ public static class LabKit
     public const string PhysMatFolder = "Assets/Art/Physics Materials";
     public const string CharacterArtFolder = "Assets/Art/KenneyToonCharacters/Male person/PNG/Poses";
     public const string ScenesFolder = "Assets/Scenes";
-    public const string W3ScenePath = ScenesFolder + "/W3Lab.unity";
-    public const string W4ScenePath = ScenesFolder + "/W4Lab.unity";
+    public const string W03ScenePath = ScenesFolder + "/W03Lab.unity";
+    public const string W04ScenePath = ScenesFolder + "/W04Lab.unity";
 
     // ------------------------------------------------------------------ palette
     public static readonly Color BgColor = new Color(0.085f, 0.105f, 0.16f);
