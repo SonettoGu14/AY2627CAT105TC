@@ -28,6 +28,7 @@ builder and adds the animator on top. That is also the story the W4 lecture tell
 | W2 | C# fundamentals — variables and conditionals | `W02Lab` (the early 3D scene) | — |
 | W3 | Physics in Unity | `W03Lab` | — |
 | W4 | Animations and 2D art | `W04Lab` | `W04Slides` (28 slides, 44 demos) |
+| W5 | Camera and UI | `W05Lab` | `W05Slides` (34 slides, 27 demos) |
 
 ## Running it
 
@@ -54,17 +55,20 @@ deactivation is what actually stops the game reacting to input — `timeScale = 
 
 ```
 Assets/
-  Scenes/            W02Lab · W03Lab · W04Lab · W04Slides        (generated; see Scenes/README.md)
+  Scenes/            W02Lab · W03Lab · W04Lab · W04Slides · W05Lab · W05Slides
+                     (generated; see Scenes/README.md)
   Scripts/
     Common/          infrastructure every week uses — LabHud
     Slides/          the presentation system + the demo families (see Slides/README.md)
     W02_VariablesConditionals/
     W03_Physics2D/   the 2D controller, follow camera, triggers, raycasts, one-way platforms
     W04_AnimationCamera/  pickups, moving platforms, property animation, W4PlayerController
+    W05_UI/          Health, the health bar, the dialogue zone, the bag, the pause panel
   Editor/
     Common/          LabKit (scene/HUD/asset helpers), LabMenu, the art importer
     W03_Physics2D/   W03LabBuilder
     W04_AnimationCamera/  W04LabBuilder, CharacterRig
+    W05_UI/          W05LabBuilder
     Slides/          SlideDeckBuilder, SlideDemoBuilder, DemoKit, TmpBootstrap
   Art/               Kenney "Toon Characters" (CC0) + the generated shapes
   Animations/        the AnimationClips and AnimatorControllers
@@ -80,8 +84,10 @@ per-week layout). `Assets/Scenes/README.md` points at the scene-type definitions
 ```bash
 # inside Unity:
 #   CAT105TC ▸ Slides ▸ Build W04Slides      (deck JSON -> the slides scene)
+#   CAT105TC ▸ Slides ▸ Build W05Slides
 #   CAT105TC ▸ W03 Physics2D ▸ Build W03 Lab
 #   CAT105TC ▸ W04 Animation & Camera ▸ Build W04 Lab (Platformer)
+#   CAT105TC ▸ W05 UI ▸ Build W5 Lab
 #   CAT105TC ▸ Common ▸ Rebuild shared assets
 ```
 
@@ -93,8 +99,8 @@ per-week layout). `Assets/Scenes/README.md` points at the scene-type definitions
 
 | Suite | Covers |
 |---|---|
-| EditMode (14) | the slides state machine, and the real deck's deserialisation contract |
-| PlayMode (3) | the presenter ↔ demo contract: hiding the deck activates that slide's demo and unfreezes, returning keeps the slide and step |
+| EditMode (18) | the cursor, both decks' deserialisation contract, and the demo maps |
+| PlayMode (4) | the presenter ↔ demo contract, and every demo key in the W5 map activating in the built scene |
 
 ## Docs
 

@@ -35,6 +35,15 @@ public static class SlideDeckBuilder
                        "CAT105TC  \u00b7  Week 04  \u00b7  Animations and 2D Art", true);
     }
 
+    // W5 has no single "put it together" demo - its two combined slides (dialogue box, health bar)
+    // are their own demos, so the scene needs no gameplay spec.
+    [MenuItem("CAT105TC/Slides/Build W05Slides")]
+    public static void BuildW05Slides()
+    {
+        BuildDeckScene("Assets/Slides/W05_L5.json", "Assets/Scenes/W05Slides.unity",
+                       "CAT105TC  \u00b7  Week 05  \u00b7  UI", false);
+    }
+
     public static void BuildDeckScene(string deckJsonPath, string scenePath, string header, bool withGameplay)
     {
         // TMP essentials import asynchronously on a fresh clone; finish the build once ready.

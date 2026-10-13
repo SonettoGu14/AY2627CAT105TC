@@ -27,6 +27,9 @@ public static class W04LabBuilder
         new Vector3(13.5f, 0.3f, 0f)
     };
 
+    /// <summary>How many coins this week's level holds — a later week's builder needs the total.</summary>
+    public static int CoinCount { get { return CoinPositions.Length; } }
+
     // Annotation root from the most recent BuildGameplay call, so Build() can wire it
     // into the HUD (the fixed signature cannot return it).
     private static GameObject _annotations;

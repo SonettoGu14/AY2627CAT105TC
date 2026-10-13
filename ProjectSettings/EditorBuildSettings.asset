@@ -17,4 +17,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/W04Slides.unity
     guid: df2088241ff944c7b8901b3cabfad4f4
+  - enabled: 1
+    path: Assets/Scenes/W05Lab.unity
+    guid: c01b6403b1f664c52a3343f5ead886d0
+  - enabled: 1
+    path: Assets/Scenes/W05Slides.unity
+    guid: 7a1cce032a4bb4e298a306cc0e6b8f39
   m_configObjects: {}

@@ -25,6 +25,7 @@ public static class LabKit
     public const string ScenesFolder = "Assets/Scenes";
     public const string W03ScenePath = ScenesFolder + "/W03Lab.unity";
     public const string W04ScenePath = ScenesFolder + "/W04Lab.unity";
+    public const string W05ScenePath = ScenesFolder + "/W05Lab.unity";
 
     // ------------------------------------------------------------------ palette
     public static readonly Color BgColor = new Color(0.085f, 0.105f, 0.16f);

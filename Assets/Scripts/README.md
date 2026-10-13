@@ -23,7 +23,7 @@ shared `LabHud`, and (in review weeks) a checklist.
 `W03LabBuilder.CreatePlayer(...)` and then adds the Animator itself. A later week may reuse an
 earlier week's components; an earlier week must never reach forward.
 
-**Existing.** `W02Lab` (hand-made; the 3D leftovers), `W03Lab`, `W04Lab`.
+**Existing.** `W02Lab` (hand-made; the 3D leftovers), `W03Lab`, `W04Lab`, `W05Lab`.
 
 ### 2. Slides — `Assets/Scenes/WnnSlides.unity`
 
@@ -33,7 +33,7 @@ with no window switching, and so every claim on a slide can be shown running.
 
 **Built by.** `Assets/Editor/Slides/SlideDeckBuilder.cs` (+ `SlideDemoBuilder.cs`), from
 `Assets/Slides/<deck>.json` and the per-slide demo map `Assets/Slides/<deck>.demos.json` →
-`CAT105TC ▸ Slides ▸ Build WnnSlides`.
+`CAT105TC ▸ Slides ▸ Build WnnSlides` (W04Slides, W05Slides).
 
 **How it is used.** `Tab` (or the top-right button) hides the slides and reveals the current slide's
 demo(s) together with a readout panel (title / live values / the API call / key hint / "demo 2 / 3").
@@ -53,7 +53,7 @@ which is also what makes the game's input inert, because `Time.timeScale = 0` do
 * Content comes from the `.pptx`. To change words, edit the deck or the generated JSON and rebuild;
   never edit the scene.
 
-**Existing.** `W04Slides`.
+**Existing.** `W04Slides`, `W05Slides`.
 
 ### The relationship
 
@@ -124,6 +124,14 @@ Assets/Scripts/
                                 lab - it is the file students are given, so it references nothing
                                 from this project. Drives the Animator params `speed` / `isJumping`.
     SlideSnippets_W04.cs        the literal slide code
+
+  W05_UI/                     Lecture 5  "Camera and UI"
+    Health.cs                   hit points; the health bar is a view of it
+    HealthBarUI.cs              a Slider + a Text driven by Health, eased
+    DamageZone2D.cs             a hazard trigger that calls Health.Take
+    DialogueZone2D.cs           walk into the zone -> a Canvas Group fades in
+    InventoryUI.cs              a Button opens the bag; slots are Instantiate'd/Destroy'd
+    PausePanelUI.cs             a Canvas Group pausing the game (alpha + input at once)
 ```
 
 ```
@@ -137,10 +145,13 @@ Assets/Editor/
     W03LabBuilder.cs           builds W03Lab + the W3 player (no Animator) + W3 props
   W04_AnimationCamera/
     W04LabBuilder.cs           builds W04Lab
+  W05_UI/
+    W05LabBuilder.cs           builds W05Lab: calls W04LabBuilder.BuildGameplay, then adds the UI
     CharacterRig.cs            the character AnimationClips + AnimatorControllers
   Slides/
     TmpBootstrap.cs            imports TMP Essential Resources once (async-safe)
-    SlideDeckBuilder.cs        deck JSON -> a 1920x1080 scene (currently W04Slides)
+    SlideDeckBuilder.cs        deck JSON -> a 1920x1080 scene (W04Slides, W05Slides)
+    UiKit.cs                   the UI furniture the W5 demos and the W5 lab are built from
     SlideDemoBuilder.cs        builds the slide demos onto their own stages
     DemoKit.cs                 the shared demo furniture: visuals, floors, lines, bars, cameras
 ```
@@ -177,7 +188,9 @@ Assets/Editor/
 | `CAT105TC ▸ Common ▸ Rebuild shared assets` | layers, tags, generated sprites, physics materials |
 | `CAT105TC ▸ W03 Physics2D ▸ Build W03 Lab` | rebuilds `Assets/Scenes/W03Lab.unity` |
 | `CAT105TC ▸ W04 Animation & Camera ▸ Build W04 Lab` | rebuilds `Assets/Scenes/W04Lab.unity` |
+| `CAT105TC ▸ W05 UI ▸ Build W5 Lab` | rebuilds `Assets/Scenes/W05Lab.unity` |
 | `CAT105TC ▸ Slides ▸ Build W04Slides` | rebuilds the W4 deck scene (needs `Assets/Slides/W04_L4.json`) |
+| `CAT105TC ▸ Slides ▸ Build W05Slides` | rebuilds the W5 deck scene (needs `Assets/Slides/W05_L5.json`) |
 | `CAT105TC ▸ Build all current labs` | the two lab builders above |
 
 ## Assets
@@ -191,9 +204,10 @@ Assets/Editor/
 | `Assets/Scenes/W03Lab.unity`, `W04Lab.unity` | the 2D lab scenes, regenerated from `Editor/Wnn_.../` |
 | `Assets/Slides/<key>.json` | generated decks (source: the course `.pptx` files) |
 | `Assets/Scenes/W04Slides.unity` | the W4 deck scene — the slides, with the W4 game behind them |
+| `Assets/Scenes/W05Lab.unity`, `W05Slides.unity` | W5 — the W4 platformer plus a UI layer, and its deck |
 | `Assets/TextMesh Pro/` | TMP Essential Resources, committed (the deck scene references its font by GUID) |
 
-## Adding W5
+## Adding the next week
 
 1. `Assets/Scripts/W05_Topic/` — the components W5 teaches.
 2. `Assets/Editor/W05_Topic/W05LabBuilder.cs` — a builder with
@@ -207,6 +221,6 @@ Assets/Editor/
    3. add the demos for that week's knowledge points. Reuse `DemoBase` / `DemoStage` /
       `DemoReadout` / `SlideDemoMap` and the existing demo families; add a new demo family only for a
       concept nothing here demonstrates yet;
-   4. add a `[MenuItem]` beside `BuildW04Slides` in `SlideDeckBuilder`, pointing at the new deck's
+   4. add a `[MenuItem]` beside `BuildW05Slides` in `SlideDeckBuilder`, pointing at the new deck's
       scene, and run it.
    The walkthrough is in `Assets/Scripts/Slides/README.md`.

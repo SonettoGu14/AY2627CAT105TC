@@ -94,6 +94,9 @@ public class LabHud : MonoBehaviour
         RefreshScore();
     }
 
+    /// <summary>Read-only coin count, so a week's own UI can mirror the HUD (W5's bag panel does).</summary>
+    public int Coins { get { return coins; } }
+
     public void AddScore(int value) { score += value; RefreshScore(); }
 
     public void SetLives(int value) { lives = value; RefreshScore(); }

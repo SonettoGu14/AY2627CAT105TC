@@ -22,7 +22,13 @@ without switching applications.
 | `Assets/Tests/EditMode/` | `SlideCursorTests` (10) + `DeckLoadTests` (4) |
 | `Assets/Tests/PlayMode/` | `SlidePresenterPlayTests` (3) — the presenter ↔ demo contract |
 | `Assets/Slides/<key>.json` | a generated deck |
-| `Assets/Scenes/W04Slides.unity` | a generated scene |
+| `Assets/Scenes/W04Slides.unity`, `W05Slides.unity` | generated scenes |
+| `Demos/UiDemo.cs` | the W5 UI components (16 modes) |
+| `Demos/MathfDemo.cs` | W5 Mathf / Lerp (4 modes) |
+| `Demos/SpawnDemo.cs` | W5 prefab / Instantiate / Destroy (3 modes) |
+| `Demos/WidgetDemo.cs` | W5 dialogue box + health bar, with `UiPointerProbe` |
+| `Assets/Editor/Slides/UiKit.cs` | the UI furniture (canvas, panel, button, slider, mask, group) |
+| `UiPalette.cs` | the shared UI colours (runtime, so the demos can use them) |
 
 ## Keys
 
@@ -56,8 +62,8 @@ the scene from scratch every time, so hand edits are lost.
 
 ## Adding another week
 
-1. Run the converter for that `.pptx` (only W04 has been converted so far).
-2. Add a menu item beside `BuildW04Slides`:
+1. Run the converter for that `.pptx` (W04 and W05 are converted so far).
+2. Add a menu item beside `BuildW05Slides`:
    `[MenuItem("CAT105TC/Slides/Build W05Slides")]` → `BuildDeckScene(json, scene, header, true)`.
 3. Run it — it rebuilds the scene and adds it to Build Settings.
 
@@ -86,8 +92,8 @@ is dropped silently. W04 has none of them; the whole course has 2 images and 3 t
 
 | Where | What it covers |
 |---|---|
-| `Assets/Tests/EditMode/` | `SlideCursorTests` (10) — the paging state machine; `DeckLoadTests` (4) — the real deck's deserialisation contract |
-| `Assets/Tests/PlayMode/` | `SlidePresenterPlayTests` (3) — hiding the deck activates that slide's demo and unfreezes, returning keeps the same slide, a one-demo slide survives `Next()` |
+| `Assets/Tests/EditMode/` | `SlideCursorTests` (10) — the paging state machine; `DeckLoadTests` (8) — both decks' contracts and the demo maps |
+| `Assets/Tests/PlayMode/` | `SlidePresenterPlayTests` (3) — the presenter ↔ demo contract; `W05SlidesPlayTests` (1) — every key in the W5 demo map activating in the built scene |
 
 The runtime lives in its own `Slides.Runtime` assembly and the pure logic in a separate engine-free
 `Slides.Core` one, precisely so those test assemblies can reference them (a test asmdef cannot see

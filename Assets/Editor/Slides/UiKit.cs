@@ -37,14 +37,14 @@ public static class UiKit
     public static readonly Vector2 BottomRight = new Vector2(1f, 0f);
 
     /// <summary>A screen-space canvas for one demo. Sorts below the deck and the readout.</summary>
-    public static Canvas MakeCanvas(Transform parent, string name)
+    public static Canvas MakeCanvas(Transform parent, string name, int order = DemoSOrder)
     {
         GameObject go = new GameObject(name, typeof(RectTransform), typeof(Canvas),
                                        typeof(CanvasScaler), typeof(GraphicRaycaster));
         go.transform.SetParent(parent, false);
         Canvas c = go.GetComponent<Canvas>();
         c.renderMode = RenderMode.ScreenSpaceOverlay;
-        c.sortingOrder = DemoSOrder;
+        c.sortingOrder = order;
         CanvasScaler sc = go.GetComponent<CanvasScaler>();
         sc.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         sc.referenceResolution = RefResolution;
