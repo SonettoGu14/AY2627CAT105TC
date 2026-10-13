@@ -2,6 +2,8 @@ using UnityEngine; using UnityEngine.EventSystems;
 /// <summary>
 /// Maps keys to slide actions while the deck is visible, and to demo selection while it is hidden.
 /// The demo itself reads its own keys (the readout panel lists them).
+///
+/// Slides advance a whole page at a time - there is no bullet-by-bullet reveal.
 /// </summary>
 public class SlideInput : MonoBehaviour
 {
@@ -30,9 +32,9 @@ public class SlideInput : MonoBehaviour
         if (navigator != null && navigator.JumpPanelOpen) { if (Input.GetKeyDown(KeyCode.Escape)) navigator.ToggleJumpPanel(); return; }
         if (Input.GetKeyDown(KeyCode.RightArrow))   player.NextSlide();
         if (Input.GetKeyDown(KeyCode.LeftArrow))    player.PrevSlide();
-        if (Input.GetKeyDown(KeyCode.Backspace))    player.StepBack();
+        if (Input.GetKeyDown(KeyCode.Backspace))    player.PrevSlide();
         // The mouse shortcut must not fire when the click landed on UI (e.g. the Toggle button).
         bool pointerOverUi = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
-        if (Input.GetKeyDown(KeyCode.Space) || (!pointerOverUi && Input.GetMouseButtonDown(0))) player.StepForward();
+        if (Input.GetKeyDown(KeyCode.Space) || (!pointerOverUi && Input.GetMouseButtonDown(0))) player.NextSlide();
     }
 }

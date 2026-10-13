@@ -8,7 +8,7 @@ using UnityEngine.TestTools;
 ///
 /// The regression these pin down: while the deck is up the demo roots must be INACTIVE.
 /// `Time.timeScale = 0` does **not** stop `Update()`, so a demo left active keeps running its
-/// Update and can latch input. That is exactly how "Space advances a bullet AND queues a jump"
+/// Update and can latch input. That is exactly how "Space advances the deck AND queues a jump"
 /// reached the final review: eight task reviews never exercised the presenter against a live game.
 ///
 /// `PlayerController2D` lives in `Assembly-CSharp`, which a test assembly cannot reference, so these
@@ -98,19 +98,16 @@ public class SlidePresenterPlayTests
     }
 
     [UnityTest]
-    public IEnumerator ReturningToTheDeckKeepsTheSameSlideAndStep()
+    public IEnumerator ReturningToTheDeckKeepsTheSameSlide()
     {
         presenter.SetDeckVisible(false);
         player.JumpTo(1);
-        player.StepForward();
         int slide = player.SlideIndex;
-        int revealed = player.RevealedBlocks;
 
         presenter.SetDeckVisible(true);
         yield return null;
 
         Assert.AreEqual(slide, player.SlideIndex, "the deck must come back on the same slide");
-        Assert.AreEqual(revealed, player.RevealedBlocks, "and on the same revealed bullet");
         Assert.IsFalse(demoRoot.activeSelf, "and with the demo switched off again");
         Assert.AreEqual(0f, Time.timeScale);
     }

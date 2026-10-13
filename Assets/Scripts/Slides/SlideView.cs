@@ -18,16 +18,16 @@ public class SlideView : MonoBehaviour
         if (titleText   != null) titleText.text   = s.title;
         if (subtitleText!= null) subtitleText.text= s.subtitle;
         if (pageText    != null) pageText.text    = (i + 1) + " / " + player.Cursor.SlideCount;
-        if (bodyText    != null) bodyText.text    = BuildBody(s, player.RevealedBlocks);
+        if (bodyText    != null) bodyText.text    = BuildBody(s);
     }
 
-    static string BuildBody(SlideData s, int revealed)
+    /// <summary>The whole slide at once - every block, in order. No incremental reveal.</summary>
+    static string BuildBody(SlideData s)
     {
         if (s.blocks == null || s.blocks.Length == 0)
             return s.table != null ? TableToText(s.table) : "";
         var sb = new StringBuilder();
-        int n = Mathf.Clamp(revealed, 0, s.blocks.Length);
-        for (int k = 0; k < n; k++)
+        for (int k = 0; k < s.blocks.Length; k++)
         {
             var b = s.blocks[k];
             if (b.kind == "blank") { sb.Append('\n'); continue; }

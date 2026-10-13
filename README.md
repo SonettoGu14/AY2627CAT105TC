@@ -40,8 +40,8 @@ builder and adds the animator on top. That is also the story the W4 lecture tell
 |---|---|---|
 | `Tab` (or the top-right button) | hide the slides → the live demo | show the slides again |
 | `→` / `←` | next / previous slide | — |
-| `Space` | next bullet, then next slide | jump (the demo's game) |
-| `Backspace` | previous bullet | — |
+| `Space` | next slide | jump (the demo's game) |
+| `Backspace` | previous slide | — |
 | `,` / `.` | — | previous / next demo on this slide |
 | `0`–`9` | — | jump straight to that demo |
 | `G` | jump-to-slide grid | — |

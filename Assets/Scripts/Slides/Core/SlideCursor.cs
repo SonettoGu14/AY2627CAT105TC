@@ -1,33 +1,24 @@
-/// Pure slide/step state machine - no Unity types, so it is unit-testable.
+/// <summary>
+/// Pure slide-paging state machine - no Unity types, so it is unit-testable.
+///
+/// One slide at a time, and nothing else: a slide is shown **whole**. There is no bullet-by-bullet
+/// reveal - the decks have never used one, so the cursor does not model one.
+/// </summary>
 public class SlideCursor
 {
-    private readonly int[] blocksPerSlide;
-    public SlideCursor(int[] blocksPerSlide) { this.blocksPerSlide = blocksPerSlide ?? new int[0]; }
-    public int SlideCount => blocksPerSlide.Length;
+    private readonly int slideCount;
+
+    public SlideCursor(int slideCount) { this.slideCount = slideCount < 0 ? 0 : slideCount; }
+
+    public int SlideCount => slideCount;
     public int SlideIndex { get; private set; }
-    public int RevealedBlocks { get; private set; }
-    public int BlocksAt(int i) => (i >= 0 && i < SlideCount) ? blocksPerSlide[i] : 0;
-    public bool StepsExhausted => RevealedBlocks >= BlocksAt(SlideIndex);
 
-    public void JumpTo(int i) { SlideIndex = Clamp(i); RevealedBlocks = BlocksAt(SlideIndex); }
-    // Clamp at the ends WITHOUT disturbing the current slide's reveal state: pressing right on the
-    // last slide must not collapse its bullets, and pressing left on the first must do nothing.
-    public void NextSlide()   { if (SlideIndex < SlideCount - 1) { SlideIndex++; RevealedBlocks = 0; } }
-    public void PrevSlide()   { if (SlideIndex > 0) { SlideIndex--; RevealedBlocks = BlocksAt(SlideIndex); } }
+    /// <summary>Go straight to a slide, clamped into range. Used by the jump-to-slide grid.</summary>
+    public void JumpTo(int i) { SlideIndex = Clamp(i); }
 
-    public bool StepForward()
-    {
-        if (!StepsExhausted) { RevealedBlocks++; return true; }
-        if (SlideIndex < SlideCount - 1) { NextSlide(); return true; }
-        return false;
-    }
+    // Clamp at the ends rather than wrapping: pressing right on the last slide must do nothing.
+    public void NextSlide() { if (SlideIndex < slideCount - 1) SlideIndex++; }
+    public void PrevSlide() { if (SlideIndex > 0) SlideIndex--; }
 
-    public bool StepBack()
-    {
-        if (RevealedBlocks > 0) { RevealedBlocks--; return true; }
-        if (SlideIndex > 0) { PrevSlide(); return true; }
-        return false;
-    }
-
-    private int Clamp(int i) => SlideCount == 0 ? 0 : (i < 0 ? 0 : (i > SlideCount - 1 ? SlideCount - 1 : i));
+    private int Clamp(int i) => slideCount == 0 ? 0 : (i < 0 ? 0 : (i > slideCount - 1 ? slideCount - 1 : i));
 }

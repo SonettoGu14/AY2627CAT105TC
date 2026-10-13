@@ -38,7 +38,7 @@ with no window switching, and so every claim on a slide can be shown running.
 **How it is used.** `Tab` (or the top-right button) hides the slides and reveals the current slide's
 demo(s) together with a readout panel (title / live values / the API call / key hint / "demo 2 / 3").
 `,` and `.` move between a slide's demos, a digit jumps straight to one, and `Tab` returns to the
-same slide and the same revealed step. While the slides are up the demo roots are **deactivated** —
+same slide. While the slides are up the demo roots are **deactivated** —
 which is also what makes the game's input inert, because `Time.timeScale = 0` does **not** stop
 `Update()`.
 
