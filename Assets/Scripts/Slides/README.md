@@ -88,6 +88,13 @@ not draw:
 `SlideDeckBuilder` logs a warning naming the counts whenever a deck carries any of these, so nothing
 is dropped silently. W04 has none of them; the whole course has 2 images and 3 tables.
 
+**TMP's `<mark>` tag is unusable here.** Code blocks used to wrap their line in
+`<mark=#1E2430>` for a dark bar, but with this font's material the highlight is drawn *over* the
+glyphs. Three forms were tested by screenshot - 6-digit colour, 8-digit colour, and `<color>`
+wrapped outside the `<mark>` - and every one rendered as an unreadable bar. Code lines are therefore
+tinted with `<color=#8FD9A8>` and indented. The PlayMode test `CodeBlocksAreTintedNotHighlighted`
+pins that, so the bar does not come back.
+
 ## Tests
 
 | Where | What it covers |

@@ -22,6 +22,32 @@ public class W05SlidesPlayTests
 {
     private const string SceneName = "W05Slides";
 
+    /// <summary>
+    /// Code blocks must be tinted, never wrapped in TMP's &lt;mark&gt;. With this font's material the
+    /// highlight is drawn over the glyphs, so a slide's code line - and W4 has four of them - turns
+    /// into an unreadable dark bar. That shipped once; this keeps it from shipping again.
+    /// </summary>
+    [Test]
+    public void CodeBlocksAreTintedNotHighlighted()
+    {
+        var slide = new SlideData
+        {
+            blocks = new[]
+            {
+                new SlideBlock { level = 0, text = "a bullet", kind = "bullet" },
+                new SlideBlock { level = 0, text = "Destroy(Object go, float t = 0f)", kind = "code" },
+            }
+        };
+        string body = SlideView.BuildBody(slide);
+
+        Assert.IsTrue(body.Contains("Destroy(Object go, float t = 0f)"),
+            "the code text itself must reach the body");
+        Assert.IsFalse(body.Contains("<mark"),
+            "TMP's <mark> draws a bar over the glyphs with this font's material - keep it out");
+        Assert.IsTrue(body.Contains("<color=#8FD9A8>"),
+            "the code line should still be tinted so it reads as code");
+    }
+
     [UnityTest]
     public IEnumerator EveryDemoKeyInTheMapActivates()
     {

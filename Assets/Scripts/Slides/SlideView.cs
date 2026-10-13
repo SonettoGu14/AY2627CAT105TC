@@ -22,7 +22,7 @@ public class SlideView : MonoBehaviour
     }
 
     /// <summary>The whole slide at once - every block, in order. No incremental reveal.</summary>
-    static string BuildBody(SlideData s)
+    public static string BuildBody(SlideData s)
     {
         if (s.blocks == null || s.blocks.Length == 0)
             return s.table != null ? TableToText(s.table) : "";
@@ -34,7 +34,11 @@ public class SlideView : MonoBehaviour
             // Only glyphs the shipped font actually contains: LiberationSans SDF has U+2022 but
             // NOT U+25E6 or U+25AA, which used to render as nothing plus a per-codepoint TMP error.
             string indent = b.level <= 0 ? "\u2022 " : b.level == 1 ? "     - " : "          - ";
-            if (b.kind == "code") sb.Append("<mark=#1E2430><color=#8FD9A8>  ").Append(b.text).Append("  </color></mark>");
+            // Code lines are tinted, not highlighted. TMP's <mark> tag draws a bar that covers the
+            // glyphs with this font's material - verified three ways (6-digit colour, 8-digit
+            // colour, and <color> wrapped outside the <mark>), all unreadable - so a coloured,
+            // indented line is what actually shows up.
+            if (b.kind == "code") sb.Append("<color=#8FD9A8>      ").Append(b.text).Append("</color>");
             else sb.Append(indent).Append(b.text);
             sb.Append('\n');
         }

@@ -3,7 +3,7 @@
   "title": "UI",
   "subtitle": "Lecture 5",
   "source": "W5 - L5 - UI.pptx",
-  "generated": "2026-10-13T16:05:10",
+  "generated": "2026-10-13T16:30:23",
   "slides": [
     {
       "index": 1,
@@ -383,7 +383,7 @@
         {
           "level": 1,
           "text": "Overlay (displayed on the topmost layer of the screen)",
-          "kind": "code"
+          "kind": "bullet"
         },
         {
           "level": 2,
@@ -403,7 +403,7 @@
         {
           "level": 1,
           "text": "Camera (rendered using a camera)",
-          "kind": "code"
+          "kind": "bullet"
         },
         {
           "level": 2,
