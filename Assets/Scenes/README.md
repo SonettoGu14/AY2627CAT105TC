@@ -8,7 +8,7 @@ Two kinds of scene live here, defined in full under **"Scene types"** in
 | `WnnLab.unity` | **Lab Playground** | the week's hands-on scene: the students build and run it |
 | `WnnSlides.unity` | **Slides** | the lecture deck, with a live demo behind every slide |
 
-Currently: `W2Lab`, `W3Lab`, `W4Lab` (labs) and `W04Slides` (slides).
+Currently: `W02Lab`, `W03Lab`, `W04Lab` (labs) and `W04Slides` (slides).
 
 **Both kinds are generated.** Rebuild them from the menu bar —
 
@@ -19,4 +19,4 @@ Currently: `W2Lab`, `W3Lab`, `W4Lab` (labs) and `W04Slides` (slides).
 the next build. To change a lab, edit its builder in `Assets/Editor/Wnn_Topic/`; to change a deck,
 edit the `.pptx` (or the generated JSON in `Assets/Slides/`) and rebuild.
 
-Build Settings order: `W2Lab`, `W3Lab`, `W4Lab`, `W04Slides`.
+Build Settings order: `W02Lab`, `W03Lab`, `W04Lab`, `W04Slides`.

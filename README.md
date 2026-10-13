@@ -18,16 +18,16 @@ Both are **generated from code and never hand-edited** — the builders rebuild 
 Change the builder (or the source data it reads), then re-run the menu item.
 
 The scope rule that shapes everything: **a lab contains only what has been taught by that week.**
-`W3Lab`'s player has no `Animator`, because animation is W4 material; the W4 builder calls the W3
+`W03Lab`'s player has no `Animator`, because animation is W4 material; the W4 builder calls the W3
 builder and adds the animator on top. That is also the story the W4 lecture tells.
 
 ### Built so far
 
 | Week | Topic | Lab | Slides |
 |---|---|---|---|
-| W2 | C# fundamentals — variables and conditionals | `W2Lab` (the early 3D scene) | — |
-| W3 | Physics in Unity | `W3Lab` | — |
-| W4 | Animations and 2D art | `W4Lab` | `W04Slides` (28 slides, 44 demos) |
+| W2 | C# fundamentals — variables and conditionals | `W02Lab` (the early 3D scene) | — |
+| W3 | Physics in Unity | `W03Lab` | — |
+| W4 | Animations and 2D art | `W04Lab` | `W04Slides` (28 slides, 44 demos) |
 
 ## Running it
 
@@ -54,7 +54,7 @@ deactivation is what actually stops the game reacting to input — `timeScale = 
 
 ```
 Assets/
-  Scenes/            W2Lab · W3Lab · W4Lab · W04Slides        (generated; see Scenes/README.md)
+  Scenes/            W02Lab · W03Lab · W04Lab · W04Slides        (generated; see Scenes/README.md)
   Scripts/
     Common/          infrastructure every week uses — LabHud
     Slides/          the presentation system + the demo families (see Slides/README.md)
@@ -80,8 +80,8 @@ per-week layout). `Assets/Scenes/README.md` points at the scene-type definitions
 ```bash
 # inside Unity:
 #   CAT105TC ▸ Slides ▸ Build W04Slides      (deck JSON -> the slides scene)
-#   CAT105TC ▸ W03 Physics2D ▸ Build W3 Lab
-#   CAT105TC ▸ W04 Animation & Camera ▸ Build W4 Lab (Platformer)
+#   CAT105TC ▸ W03 Physics2D ▸ Build W03 Lab
+#   CAT105TC ▸ W04 Animation & Camera ▸ Build W04 Lab (Platformer)
 #   CAT105TC ▸ Common ▸ Rebuild shared assets
 ```
 

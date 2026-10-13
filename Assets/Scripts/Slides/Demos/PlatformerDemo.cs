@@ -17,7 +17,7 @@ public class PlatformerDemo : DemoBase
 
     public override void Readout(List<string> lines)
     {
-        lines.Add("This is the scene W4Lab builds - the lab you");
+        lines.Add("This is the scene W04Lab builds - the lab you");
         lines.Add("write this week, not a slide-only demo.");
         lines.Add("");
         lines.Add("Everything from the lecture is in here:");

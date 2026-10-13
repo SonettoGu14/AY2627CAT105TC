@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// W4 lecture content - "Animations and 2D Art" (sprites, Animation, Animator, Camera).
 ///
-/// Builds Assets/Scenes/W4Lab.unity: a small 2D platformer that reviews the W3 controller
+/// Builds Assets/Scenes/W04Lab.unity: a small 2D platformer that reviews the W3 controller
 /// and adds the W4 material on top - sprite flip-book animation, an Animator state machine
 /// driven from code, a property animation, and an orthographic follow camera.
 ///
@@ -31,7 +31,7 @@ public static class W04LabBuilder
     // into the HUD (the fixed signature cannot return it).
     private static GameObject _annotations;
 
-    [MenuItem("CAT105TC/W04 Animation & Camera/Build W4 Lab (Platformer)")]
+    [MenuItem("CAT105TC/W04 Animation & Camera/Build W04 Lab (Platformer)")]
     public static void BuildMenu()
     {
         Build();
@@ -132,17 +132,17 @@ public static class W04LabBuilder
 
         // --- HUD -----------------------------------------------------------------------
         LabHud hud;
-        LabKit.BuildHud("CAT105TC  W4 Lab  -  Animations & Camera", false, out hud);
+        LabKit.BuildHud("CAT105TC  W04 Lab  -  Animations & Camera", false, out hud);
         hud.player = player;
         hud.targetCamera = cam;
         hud.annotationRoot = _annotations;
         hud.totalCoins = CoinPositions.Length;
         hud.help = "A / D  move      Space  jump\nS + Space  drop through the one-way platform\nP  replay property animation\nR  restart      T  labels      C  camera     H  hide help";
 
-        EditorSceneManager.SaveScene(scene, LabKit.W4ScenePath);
-        LabKit.AddSceneToBuildSettings(LabKit.W4ScenePath);
+        EditorSceneManager.SaveScene(scene, LabKit.W04ScenePath);
+        LabKit.AddSceneToBuildSettings(LabKit.W04ScenePath);
         AssetDatabase.SaveAssets();
-        Debug.Log("[W04LabBuilder] W4Lab built.");
+        Debug.Log("[W04LabBuilder] W04Lab built.");
     }
 
     /// <summary>
