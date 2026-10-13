@@ -1,0 +1,1222 @@
+{
+  "key": "W05_L5",
+  "title": "UI",
+  "subtitle": "Lecture 5",
+  "source": "W5 - L5 - UI.pptx",
+  "generated": "2026-10-13T16:05:10",
+  "slides": [
+    {
+      "index": 1,
+      "layout": "title",
+      "title": "Camera and UI",
+      "subtitle": "Lecture 5",
+      "blocks": [],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 2,
+      "layout": "content",
+      "title": "Review: Animation System",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Open the Animation window: Windows>Animation",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Function: Edit animation, create new animation",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "Each animation is an AnimationClip, stored in the Assets folder",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "The actual component that plays the animation is the Animator component on the object.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "Open the Animator window: Windows>Animator",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Function: Manage the playback order and logic of animations",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 3,
+      "layout": "content",
+      "title": "Camera: Perspective vs Orthographic",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "The Camera component has two main modes: Perspective and Orthographic",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Perspective: near objects look larger, far objects look smaller",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "The view is a cone (frustum); Field of View controls how wide it is",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Generally used for 3D games",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Orthographic: objects look the same size however far away they are",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "The view is a rectangular prism; Size controls how much you see",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Generally used for 2D games",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "</> Press P to switch between the two modes and compare",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 4,
+      "layout": "content",
+      "title": "Prefab",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Prefabs in Unity allow us to \"save\" what we create in the scene to the project folder for easy reuse later.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "For example, we made a street lamp and saved it as a prefab. Then we can add many identical street lamps to the scene, and if we modify the prefab, all the street lamps will be modified accordingly.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "Create a prefab: Drag the object from the Hierarchy into the Project window.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Using prefabs: Drag the prefab from the Project window into the scene (this is called creating an instance of a prefab)",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Edit prefabs: Double-click to open a prefab",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 5,
+      "layout": "content",
+      "title": "Prefab",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "This is a very important concept in game development, and prefabs are used frequently in formal projects. The advantages of doing this are that it is easy to manage, and it is easy to modularize and standardize objects.",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 6,
+      "layout": "content",
+      "title": "Contents",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Instantiate and Destroy",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "UI System",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Canvas",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "CanvasScaler, GraphicRaycaster",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Image, Button, Text",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Simple UI",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 7,
+      "layout": "content",
+      "title": "Instantiate",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Instantiate are used to generate GameObject from code.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "The syntax is:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Instantiate(Object original, Vector3 position, Quaternion rotation, Transform parent)",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Original: What to generate",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Position: Where to generate",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Rotation: How to generate (rotation only)",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Parent: Who does the new GameObject belongs to (optional)",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 8,
+      "layout": "content",
+      "title": "Destroy",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Destroy is used to destroy GameObject",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "The syntax is:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Destroy(Object gameObject, float t = 0f)",
+          "kind": "code"
+        },
+        {
+          "level": 1,
+          "text": "GameObject: What to Destroy",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "T (Optional, by default is 0, which means destroy immediately): when to destroy, count in seconds",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 9,
+      "layout": "content",
+      "title": "What is UI",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "UI is the abbreviation of User Interface. In games, UI refers to the parts that display information or allow interaction, such as text, images, buttons, progress bars, and so on.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "UI is a crucial part of a game. Generally speaking, most of the information in a game is conveyed through UI.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "So what's the difference between UI and ordinary objects?",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "UI may \"float\" on top of the screen (for example, the UI of a dialog box cannot be blocked by the scene)",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "The UI requires direct interaction from the player using a mouse/keyboard (such as organizing items in the backpack)",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 10,
+      "layout": "content",
+      "title": "Unity's UI system",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "The UI system is intuitively separate from the scene, but in essence, it exists in the scene just like other objects.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "The biggest difference is that all UI components (images, text, etc.) need a Canvas component for rendering; by default, the UI is not rendered by the camera.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "Create UI components: Right-click New > UI",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Unity will automatically create a Canvas after a new component is created.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "UI components will only be displayed if they are child objects of the Canvas (why?)",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 11,
+      "layout": "content",
+      "title": "UI Component: Canvas",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "The function of Canvas is to render UI objects; it can be understood as a \"camera that shines on the UI\".",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Canvas has several basic rendering modes:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Overlay (displayed on the topmost layer of the screen)",
+          "kind": "code"
+        },
+        {
+          "level": 2,
+          "text": "This is the default and most common mode. All UI objects belonging to the Overlay Canvas will be displayed above the scene.",
+          "kind": "bullet"
+        },
+        {
+          "level": 2,
+          "text": "Advantage: Easy to use",
+          "kind": "bullet"
+        },
+        {
+          "level": 2,
+          "text": "Disadvantages: Inflexible. Generally, there can be no perspective effect; scene objects cannot cover the UI",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Camera (rendered using a camera)",
+          "kind": "code"
+        },
+        {
+          "level": 2,
+          "text": "Render the UI components of the Canvas and all its child objects using a specific camera.",
+          "kind": "bullet"
+        },
+        {
+          "level": 2,
+          "text": "Advantages: More flexible, can have perspective effects, and scene objects can cover the UI (How?)",
+          "kind": "bullet"
+        },
+        {
+          "level": 2,
+          "text": "Disadvantages: More complex, requiring handling of hierarchical relationships and multi-camera coordination",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 12,
+      "layout": "content",
+      "title": "UI Component: Canvas",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "World Space (World Coordinate Rendering)",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Place the Canvas in the scene and have it rendered by the camera along with all other objects.",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 13,
+      "layout": "content",
+      "title": "Canvas Scaler and Graphic Raycaster",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "When we create a new Canvas, Unity automatically adds two components: CanvasScaler and GraphicRaycaster.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "They are all lightweight components, and we usually don't need to put much effort into them.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "Canvas Scaler",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Will scale the Canvas according to certain conditions (such as screen resolution)",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "It is a crucial part of multi-device adaptation.",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "By default, the scaling mode of CanvasScaler is \"ConstantPixelSize\", which means no scaling.",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "We usually set it to Scale with Screen Size to adapt to the screen resolution",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 14,
+      "layout": "content",
+      "title": "Canvas Scaler and Graphic Raycaster",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Graphic Raycaster",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "With this component, the UI system will detect player inputs (such as clicking buttons, etc.)",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 15,
+      "layout": "content",
+      "title": "UI Component: Image",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "The Image component is used to display images on the UI.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "It is very similar to SpriteRenderer, as both are used to display images. (What is the difference between them?)",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Properties of the Image component:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Source Image: Sprite displayed",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Color: Tinting (same as SpriteRenderer, it's tinting!)",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Material: The material of the image (relevant knowledge about materials will be covered later)",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Raycast Target: If enabled, it will receive and block mouse input (what is the relationship with Raycast?)",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "</> Create several images and display them in the game!",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 16,
+      "layout": "content",
+      "title": "UI Component: Text",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "The Text component is used to display text in the UI",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "There are two types of components for displaying text: Unity's Text and TextMeshPro's Text. The former has fewer functions, while the latter is more advanced",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "Properties of the Text component:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Font, size, color, content, line spacing, etc.",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 17,
+      "layout": "content",
+      "title": "UI Component: Button",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "The Button component provides the functionality of a UI button.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "There are the following questions that need to be explored:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "What is the scope of a button? Where do we click to trigger a button?",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "How to achieve the visual effects of a button when the mouse hovers over it or clicks it?",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "What happens after clicking the button?",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "How to modify the shape, color, text, etc. of a button?",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "What is the relationship between the Button component and other UI components? (such as GraphicRaycaster)",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "</> Explore the Button component!",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 18,
+      "layout": "content",
+      "title": "Accessing UI components in code",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Like the other components we've seen before, UI components can all be accessed in code.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Each component is a class",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Every option you see in the interface is a member of that class",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "</> Let's use code to implement the function of switching pictures and text by clicking a button!",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 19,
+      "layout": "content",
+      "title": "Class Mathf",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "The Mathf class is a commonly used mathematical function class provided by Unity, such as min, max, sin, cos, round, etc.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "Why is it called Mathf? What does the \"f\" mean?",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "C# has a built-in Math class, but all the variables used in it are of double type. Unity \"encapsulates\" C#'s Math class into a Mathf class that uses float type, because we more commonly use float to represent decimals. So f stands for float!",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 20,
+      "layout": "content",
+      "title": "Class Mathf",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Several commonly used functions in Mathf:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Mathf.Lerp(float a, float b, float t): Linear interpolation",
+          "kind": "bullet"
+        },
+        {
+          "level": 2,
+          "text": "Simply put, it gets a number between a and b. When t = 0, it is a; when t = 1, it is b; when t is between 0 and 1, it is a value in the corresponding proportion from a to b.",
+          "kind": "bullet"
+        },
+        {
+          "level": 2,
+          "text": "For example: Mathf.Lerp(50, 100, 0.5) equals 75 (why?)",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Mathf.Min(float a, float b): gets the smaller value between a and b. (The same applies to Mathf.Max)",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Mathf.Clamp(float v, float min, float max): Keeps v within the range from min to max. If v < min, the value is min; if v > max, the value is max.",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 21,
+      "layout": "content",
+      "title": "Mathf.Lerp / Vector3.Lerp",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Lerp is a function that is quite useful but difficult for beginners to understand",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "A common use is \"non-linear animation\", such as",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 1,
+          "text": "Vector3 pos = new Vector3(50,0,0);",
+          "kind": "code"
+        },
+        {
+          "level": 1,
+          "text": "void Update(){\ttransform.position = Vector3.Lerp(transform.position, pos);",
+          "kind": "code"
+        },
+        {
+          "level": 1,
+          "text": "}",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 22,
+      "layout": "content",
+      "title": "Mathf.Lerp / Vector3.Lerp",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Another (obvious) use is to \"blend\" two sets of data",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "For example, if a subject in the SAT is scored on a scale of 400-800, what score would 70% correctness correspond to?",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "Mathf.Lerp(400,800,0.7f);",
+          "kind": "code"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 23,
+      "layout": "content",
+      "title": "Prefab",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Prefabs in Unity allow us to \"save\" what we create in the scene to the project folder for easy reuse later.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "For example, we made a street lamp and saved it as a prefab. Then we can add many identical street lamps to the scene, and if we modify the prefab, all the street lamps will be modified accordingly.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "Create a prefab: Drag the object from the Hierarchy into the Project window.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Using prefabs: Drag the prefab from the Project window into the scene (this is called creating an instance of a prefab)",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Edit prefabs: Double-click to open a prefab",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 24,
+      "layout": "content",
+      "title": "Prefab",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "This is a very important concept in game development, and prefabs are used frequently in formal projects. The advantages of doing this are that it is easy to manage, and it is easy to modularize and standardize objects.",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 25,
+      "layout": "content",
+      "title": "UI Component: Slider",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "The Slider component (drag bar) can be used to implement functions similar to progress bars or slide bars in the UI.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Slider structure: Background, Fill, Handle",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "The most important part is Fill, which displays the current value of the Slider",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "The value of the Slider is a decimal between 0 and 1, where 0 means empty and 1 means full. For example, a progress bar that is 67% full can be represented by a Slider with a value of 0.67",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Using Slider: You can modify the value of the Slider in the engine/code (slider.value)",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 26,
+      "layout": "content",
+      "title": "UI Component: Mask",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Like SpriteMask, the Mask component provides masking functionality in UI.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Using Mask:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Add a Mask component to a UI image component object (such as Image)",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "All its child objects can only be displayed within its range (only child objects are affected by the Mask)",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "RectMask2D component",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Sometimes we only need a rectangular Mask instead of one with an arbitrary shape. In such cases, we can use the RectMask2D component replaces the Mask component because the Mask component is more performance-intensive.",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 27,
+      "layout": "content",
+      "title": "UI Component: RectTransform",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "It can be noticed that the Transform on all UI objects has been replaced by Unity with RectTransform.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "RectTransform is a subclass of Transform. It provides information such as the position, rotation, scale, center, and anchor points of a rectangle, and can adjust itself according to the parent's RectTransform component.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Simply put, RectTransform stores the spatial information of UI objects.",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 28,
+      "layout": "content",
+      "title": "UI Component: RectTransform",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Position of RectTransform: Like Transform, it is defined by Pos X, Pos Y, and Pos Z.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Size of RectTransform: In addition to Scale, there are two properties, Width and Height, which intuitively define the length and width of the rectangle and do not affect the Scale. Rotation of RectTransform: Same as Transform, but the rotation center is its Pivot.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "So what are Pivot and Anchor?",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 29,
+      "layout": "content",
+      "title": "Pivot & Anchor",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Pivot and Anchor are the biggest differences between RectTransform and Transform",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Pivot is the \"center point\", which determines the center around which an object rotates.",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "It is a value ranging from (0,0) to (1,1), corresponding to the bottom-left corner and top-right corner respectively. For example, if the pivot is (1,1), the object will rotate around the top-right corner.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Anchor refers to \"anchor point\", which determines the positions of the bottom-left corner and top-right corner of the object.",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "The anchor is determined by two values: Min (bottom-left corner) and Max (top-right corner), both ranging from (0,0) to (1,1), corresponding to the bottom-left corner and top-right corner of the parent respectively. Note that this is relative to the parent!",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 30,
+      "layout": "content",
+      "title": "Creating animations in UI",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Animation is the soul of UI!",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "A smooth transition animation can greatly enhance the player experience. (For example, iOS system animations)",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "The logic of animations in UI is generally very simple: play an animation when the player clicks a button",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "For example: when opening the backpack, the backpack interface gradually fades in; when clicking to start the game, the scene darkens, etc.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "When we try to make a UI panel fade in, we encounter a problem: there are many pictures in an interface, and it is not very convenient to adjust their transparency together.",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 31,
+      "layout": "content",
+      "title": "UI Component: Canvas Group",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "The Canvas Group component can treat all UI objects of its child objects as a whole and adjust them together:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "(1) Transparency",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "(2) Whether to accept mouse input (raycast)",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "(3) Interactivity (interactable)",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "Among them, the transparency property is the most commonly used",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "It's usually a good idea to add its own Canvas and Canvas Group to each UI interface!",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 32,
+      "layout": "content",
+      "title": "Create a dialogue box",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "We want to implement the function of \"triggering a dialogue when the player walks to a certain position\"",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "First, create the shape, content, and animation of the dialogue box - 2.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Then add a trigger to the scene and trigger the animation that displays the dialogue box.",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 33,
+      "layout": "content",
+      "title": "Health Bar",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "We want to implement a health bar function (which UI component to use?)",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "",
+          "kind": "blank"
+        },
+        {
+          "level": 0,
+          "text": "The steps are the same as the dialog box:",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "First, we need to create the shape, content, and animation of the health bar.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Then, add triggers for objects in the scene that can harm the player and trigger the \"injured\" function.",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 34,
+      "layout": "title",
+      "title": "The End",
+      "subtitle": "Lecture 5",
+      "blocks": [],
+      "table": null,
+      "image": null
+    }
+  ]
+}
