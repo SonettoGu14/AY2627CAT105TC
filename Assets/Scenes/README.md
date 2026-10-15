@@ -5,7 +5,7 @@ Three kinds of scene live here, defined in full under **"Scene types"** in
 
 | Scene | Kind | Job |
 |---|---|---|
-| `WnnLab.unity` | **Lab** (starter) | where a lab session begins: the character works, the students add the week's material |
+| `WnnLab.unity` | **Lab** | the lecture's worked example, small enough for a student to reproduce |
 | `WnnPlayground.unity` | **Playground** | the combined result: the week's topics laid out and runnable |
 | `WnnSlides.unity` | **Slides** | the lecture deck, with a live demo behind every slide |
 

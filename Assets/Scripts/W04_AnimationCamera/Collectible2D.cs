@@ -16,6 +16,12 @@ public class Collectible2D : MonoBehaviour
     public Sprite burstSprite;
     public Color burstColor = new Color(1f, 0.85f, 0.2f, 1f);
 
+    /// <summary>
+    /// Raised on pickup with the coin's value, so a later week's HUD can count coins without the
+    /// coin knowing anything about a HUD. (W5's HudCoinCounter subscribes to this.)
+    /// </summary>
+    public static event System.Action<int> Picked;
+
     private void Reset()
     {
         // Sensible defaults if the component is added in the Editor.
@@ -33,6 +39,11 @@ public class Collectible2D : MonoBehaviour
         if (LabHud.Instance != null)
         {
             LabHud.Instance.AddCoin(value);
+        }
+
+        if (Picked != null)
+        {
+            Picked(value);
         }
 
         SpawnBurst();
