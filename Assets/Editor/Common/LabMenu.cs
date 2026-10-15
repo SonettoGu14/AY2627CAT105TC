@@ -16,11 +16,11 @@ public static class LabMenu
         LabKit.SetupSharedAssets();
     }
 
-    [MenuItem("CAT105TC/Build all current labs")]
+    [MenuItem("CAT105TC/Build all current playgrounds")]
     public static void BuildAll()
     {
-        W04LabBuilder.Build();
-        W03LabBuilder.Build();
+        W04PlaygroundBuilder.Build();
+        W03PlaygroundBuilder.Build();
         Debug.Log("[LabMenu] all labs built.");
     }
 }

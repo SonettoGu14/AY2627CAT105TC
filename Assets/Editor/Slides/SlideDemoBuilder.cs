@@ -34,7 +34,7 @@ public static class SlideDemoBuilder
 
     public static DemoStage Build(Transform parent, bool withPlatformer)
     {
-        // The demo clips/controllers and the shared sprites/layers must exist even when the W4 lab
+        // The demo clips/controllers and the shared sprites/layers must exist even when the W04 playground
         // has never been built. Both calls are idempotent.
         LabKit.SetupSharedAssets();
         CharacterRig.EnsureDemoAssets();
@@ -205,7 +205,7 @@ public static class SlideDemoBuilder
         {
             PlayerController2D labPlayer;
             Camera labCam;
-            W04LabBuilder.BuildGameplay(t, out labPlayer, out labCam);
+            W04PlaygroundBuilder.BuildGameplay(t, out labPlayer, out labCam);
             p.produced = labCam;
             t.gameObject.AddComponent<PlatformerDemo>();   // so the readout panel has something to show
         };

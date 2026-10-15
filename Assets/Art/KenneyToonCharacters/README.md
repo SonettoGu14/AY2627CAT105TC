@@ -3,8 +3,8 @@
 Source: [Kenney](https://kenney.nl) "Toon Characters" pack — **CC0 / public domain**.
 Free for personal, educational and commercial use. Crediting Kenney is optional but appreciated.
 
-This folder is the shared character art for the labs — the W3 lab uses the single `idle`
-frame (W3 has no animation yet), the **W04 lab** (`Assets/Scenes/W04Lab.unity`) turns it into
+This folder is the shared character art for the labs — the W03 playground uses the single `idle`
+frame (W3 has no animation yet), the **W04 lab** (`Assets/Scenes/W04Playground.unity`) turns it into
 a full flip-book animation. It is the exact same set of sprite frames you can hand to
 students so everyone animates the same character.
 
@@ -146,7 +146,7 @@ public const string CharacterArtFolder = "Assets/Art/KenneyToonCharacters/Robot/
 
 Note: the animation is **W4 lecture content**, which is why the clips and the
 AnimatorController live under `Assets/Animations/W04_AnimationCamera/` and are built by
-`Editor/W04_AnimationCamera/CharacterRig.cs`. The W3 lab presents the character without an
+`Editor/W04_AnimationCamera/CharacterRig.cs`. The W03 playground presents the character without an
 Animator on purpose — animation had not been taught yet.
 
 ---
@@ -155,5 +155,5 @@ Animator on purpose — animation had not been taught yet.
 
 Animating `Transform.m_LocalPosition` on an object **clears the axes you did not key** —
 animate a child ("Visual") if you want the parent to stay put. The `PropertyDemo` object in
-W04Lab is built exactly this way. It is the animation-overrides-code lesson from the slide,
+W04Playground is built exactly this way. It is the animation-overrides-code lesson from the slide,
 made concrete.

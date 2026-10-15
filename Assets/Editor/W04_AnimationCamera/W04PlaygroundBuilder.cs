@@ -6,14 +6,14 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// W4 lecture content - "Animations and 2D Art" (sprites, Animation, Animator, Camera).
 ///
-/// Builds Assets/Scenes/W04Lab.unity: a small 2D platformer that reviews the W3 controller
+/// Builds Assets/Scenes/W04Playground.unity: a small 2D platformer that reviews the W3 controller
 /// and adds the W4 material on top - sprite flip-book animation, an Animator state machine
 /// driven from code, a property animation, and an orthographic follow camera.
 ///
-/// Note the shape of Build(): it calls W03LabBuilder.CreatePlayer / MakeOneWayPlatform -
+/// Note the shape of Build(): it calls W03PlaygroundBuilder.CreatePlayer / MakeOneWayPlatform -
 /// W4 visibly builds ON the W3 work rather than re-implementing it.
 /// </summary>
-public static class W04LabBuilder
+public static class W04PlaygroundBuilder
 {
     // Coin layout. Kept at class scope so Build() can report the HUD total without
     // widening BuildGameplay's signature.
@@ -34,7 +34,7 @@ public static class W04LabBuilder
     // into the HUD (the fixed signature cannot return it).
     private static GameObject _annotations;
 
-    [MenuItem("CAT105TC/W04 Animation & Camera/Build W04 Lab (Platformer)")]
+    [MenuItem("CAT105TC/W04 Animation & Camera/Build W04 Playground (Platformer)")]
     public static void BuildMenu()
     {
         Build();
@@ -135,17 +135,17 @@ public static class W04LabBuilder
 
         // --- HUD -----------------------------------------------------------------------
         LabHud hud;
-        LabKit.BuildHud("CAT105TC  W04 Lab  -  Animations & Camera", false, out hud);
+        LabKit.BuildHud("CAT105TC  W04 Playground  -  Animations & Camera", false, out hud);
         hud.player = player;
         hud.targetCamera = cam;
         hud.annotationRoot = _annotations;
         hud.totalCoins = CoinPositions.Length;
         hud.help = "A / D  move      Space  jump\nS + Space  drop through the one-way platform\nP  replay property animation\nR  restart      T  labels      C  camera     H  hide help";
 
-        EditorSceneManager.SaveScene(scene, LabKit.W04ScenePath);
-        LabKit.AddSceneToBuildSettings(LabKit.W04ScenePath);
+        EditorSceneManager.SaveScene(scene, LabKit.W04PlaygroundPath);
+        LabKit.AddSceneToBuildSettings(LabKit.W04PlaygroundPath);
         AssetDatabase.SaveAssets();
-        Debug.Log("[W04LabBuilder] W04Lab built.");
+        Debug.Log("[W04PlaygroundBuilder] W04Playground built.");
     }
 
     /// <summary>
@@ -179,13 +179,13 @@ public static class W04LabBuilder
         LabKit.Platform(env.transform, "Wall_R", 22f, 2f, 1f, 8f, LabKit.GroundColor, "Ground");
 
         // W3 platform, reused by W4
-        W03LabBuilder.MakeOneWayPlatform(env.transform, "OneWayPlatform", new Vector3(-6f, 0.6f, 0f), 3f, 0.4f);
+        W03PlaygroundBuilder.MakeOneWayPlatform(env.transform, "OneWayPlatform", new Vector3(-6f, 0.6f, 0f), 3f, 0.4f);
 
         MakeMovingPlatform(env.transform, new Vector3(1f, -0.75f, 0f));
         MakePropertyDemo(env.transform, new Vector3(-9f, 3.1f, 0f));
 
         // --- player: the W3 body, plus the W4 Animator --------------------------------
-        GameObject playerGO = W03LabBuilder.CreatePlayer(gameplay.transform,
+        GameObject playerGO = W03PlaygroundBuilder.CreatePlayer(gameplay.transform,
             new Vector3(-13f, -0.5f, 0f), new Vector3(-13f, -0.5f, 0f), out player);
 
         GameObject playerVisual = playerGO.transform.Find("Visual").gameObject;
@@ -198,10 +198,10 @@ public static class W04LabBuilder
         for (int i = 0; i < CoinPositions.Length; i++) MakeCoin(gameplay.transform, CoinPositions[i]);
 
         MakeGoal(gameplay.transform, new Vector3(16f, 0f, 0f));
-        W03LabBuilder.MakeKillZone(gameplay.transform, new Vector3(2f, -9f, 0f), 80f, 2f, player);
+        W03PlaygroundBuilder.MakeKillZone(gameplay.transform, new Vector3(2f, -9f, 0f), 80f, 2f, player);
 
         // --- camera (W4: orthographic + follow) ---------------------------------------
-        cam = W03LabBuilder.MakeFollowCamera(null, new Vector3(-13f, 1f, -10f), 6f, player.transform);
+        cam = W03PlaygroundBuilder.MakeFollowCamera(null, new Vector3(-13f, 1f, -10f), 6f, player.transform);
 
         // --- teaching labels -----------------------------------------------------------
         LabKit.WorldLabel(annotations.transform, "Player\n(Rigidbody2D + Animator)", new Vector3(-13f, 1.3f, 0f), LabKit.Accent);

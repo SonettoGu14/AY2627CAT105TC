@@ -7,33 +7,34 @@ Unity **2022.3.62f3c1** · Universal Render Pipeline · 2D
 
 ## What is here
 
-The project grows one week at a time, and a week can produce **two scenes with different jobs**:
+The project grows one week at a time, and a week can produce **three scenes with different jobs**:
 
 | Scene | What it is | Audience |
 |---|---|---|
-| `Assets/Scenes/WnnLab.unity` — **Lab Playground** | the week's topics laid out as labelled stations; what students build in the session | students, hands-on |
+| `Assets/Scenes/WnnLab.unity` — **Lab** (starter) | where a lab session begins: the character already works and nothing else; the students add the week's material | students, at the start |
+| `Assets/Scenes/WnnPlayground.unity` — **Playground** | the combined result: the week's topics laid out as labelled stations and runnable | students, hands-on |
 | `Assets/Scenes/WnnSlides.unity` — **Slides** | the lecture deck at 1920×1080, with a **live demo of that slide's own content** behind each slide | instructor, presenting |
 
-Both are **generated from code and never hand-edited** — the builders rebuild them from scratch.
+All of them are **generated from code and never hand-edited** — the builders rebuild them from scratch.
 Change the builder (or the source data it reads), then re-run the menu item.
 
 The scope rule that shapes everything: **a lab contains only what has been taught by that week.**
-`W03Lab`'s player has no `Animator`, because animation is W4 material; the W4 builder calls the W3
+`W03Playground`'s player has no `Animator`, because animation is W4 material; the W4 builder calls the W3
 builder and adds the animator on top. That is also the story the W4 lecture tells.
 
 ### Built so far
 
 | Week | Topic | Lab | Slides |
 |---|---|---|---|
-| W2 | C# fundamentals — variables and conditionals | `W02Lab` (the early 3D scene) | — |
-| W3 | Physics in Unity | `W03Lab` | — |
-| W4 | Animations and 2D art | `W04Lab` | `W04Slides` (28 slides, 44 demos) |
-| W5 | Camera and UI | `W05Lab` | `W05Slides` (34 slides, 27 demos) |
+| W2 | C# fundamentals — variables and conditionals | `W02Playground` (the early 3D scene) | — |
+| W3 | Physics in Unity | `W03Playground` | — |
+| W4 | Animations and 2D art | `W04Playground` | `W04Slides` (28 slides, 44 demos) |
+| W5 | Camera and UI | `W05Lab` → `W05Playground` | `W05Slides` (34 slides, 27 demos) |
 
 ## Running it
 
 1. Open the project in Unity **2022.3.62f3c1** (or a later 2022.3 LTS).
-2. Open a scene from `Assets/Scenes/` — all four are already in Build Settings — and press **Play**.
+2. Open a scene from `Assets/Scenes/` — all of them are already in Build Settings — and press **Play**.
 
 ### Slides keys
 
@@ -55,7 +56,8 @@ deactivation is what actually stops the game reacting to input — `timeScale = 
 
 ```
 Assets/
-  Scenes/            W02Lab · W03Lab · W04Lab · W04Slides · W05Lab · W05Slides
+  Scenes/            W02Playground · W03Playground · W04Playground · W04Slides
+                     W05Playground · W05Slides · W05Lab (the W5 starter)
                      (generated; see Scenes/README.md)
   Scripts/
     Common/          infrastructure every week uses — LabHud
@@ -66,9 +68,9 @@ Assets/
     W05_UI/          Health, the health bar, the dialogue zone, the bag, the pause panel
   Editor/
     Common/          LabKit (scene/HUD/asset helpers), LabMenu, the art importer
-    W03_Physics2D/   W03LabBuilder
-    W04_AnimationCamera/  W04LabBuilder, CharacterRig
-    W05_UI/          W05LabBuilder
+    W03_Physics2D/   W03PlaygroundBuilder
+    W04_AnimationCamera/  W04PlaygroundBuilder, CharacterRig
+    W05_UI/          W05PlaygroundBuilder, W05LabBuilder (the starter)
     Slides/          SlideDeckBuilder, SlideDemoBuilder, DemoKit, TmpBootstrap
   Art/               Kenney "Toon Characters" (CC0) + the generated shapes
   Animations/        the AnimationClips and AnimatorControllers
@@ -85,8 +87,10 @@ per-week layout). `Assets/Scenes/README.md` points at the scene-type definitions
 # inside Unity:
 #   CAT105TC ▸ Slides ▸ Build W04Slides      (deck JSON -> the slides scene)
 #   CAT105TC ▸ Slides ▸ Build W05Slides
-#   CAT105TC ▸ W03 Physics2D ▸ Build W03 Lab
-#   CAT105TC ▸ W04 Animation & Camera ▸ Build W04 Lab (Platformer)
+#   CAT105TC ▸ W03 Physics2D ▸ Build W03 Playground
+#   CAT105TC ▸ W04 Animation & Camera ▸ Build W04 Playground (Platformer)
+#   CAT105TC ▸ W05 UI ▸ Build W05 Playground (UI)      (the finished UI scene)
+#   CAT105TC ▸ W05 UI ▸ Build W5 Lab (Starter)         (where the W5 lab begins)
 #   CAT105TC ▸ W05 UI ▸ Build W5 Lab
 #   CAT105TC ▸ Common ▸ Rebuild shared assets
 ```
