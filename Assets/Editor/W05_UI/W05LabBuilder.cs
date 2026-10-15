@@ -7,9 +7,10 @@ using UnityEngine.SceneManagement;
 /// W5's lab STARTER - the scene a lab session begins from.
 ///
 /// Deliberately minimal: a floor, two small platforms, the character (the W3 body with the W4
-/// Animator on it), a follow camera and the HUD. No coins, no goal, no hazard, and **no UI at all** -
-/// the UI is what the students add during the session, which is why this scene exists separately
-/// from W05Playground, where that UI is already finished.
+/// Animator on it) and a follow camera. No coins, no goal, no hazard, and **no UI at all** - not even
+/// the lab HUD, so there is no title bar, input visualiser or key hints on screen. The UI is what the
+/// students add during the session, which is why this scene exists separately from W05Playground,
+/// where that UI is already finished.
 ///
 /// So the week reads: W5Lab (start here) -> add UI -> W05Playground (what it looks like done).
 /// </summary>
@@ -29,16 +30,10 @@ public static class W05LabBuilder
         Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
         PlayerController2D player;
-        Camera cam;
-        BuildGameplay(null, out player, out cam);
+        BuildGameplay(null, out player, out Camera _);
 
-        LabHud hud;
-        LabKit.BuildHud("CAT105TC  W05 Lab  -  starter", false, out hud);
-        hud.player = player;
-        hud.targetCamera = cam;
-        hud.totalCoins = 0;
-        hud.help = "A / D  move      Space  jump\nR  restart      C  camera debug      H  hide this panel";
-
+        // No HUD. The starter is a blank slate: the lab HUD's title bar, input visualiser and key
+        // hints are exactly the chrome that would be in the way while a class adds its own UI.
         EditorSceneManager.SaveScene(scene, LabKit.W05LabPath);
         LabKit.AddSceneToBuildSettings(LabKit.W05LabPath);
         AssetDatabase.SaveAssets();
