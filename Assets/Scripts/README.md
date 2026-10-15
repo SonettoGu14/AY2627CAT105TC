@@ -18,8 +18,10 @@ The words are literal: a **Playground** is the big combined scene, a **Lab** is 
 nothing else. The students are handed it and spend the session adding the week's material on top.
 Only W5 has one so far. `W05Lab` is the W5 lecture's **worked example, small enough for a student to
 reproduce**: the W4 character on a floor with two platforms, a few coins and one hazard, and a
-top-right HUD that is nothing but a Canvas, three Image icons (each the character's own sprite) for
-lives and one Text for the coins. No HUD panel, no key hints. They rebuild that on their own
+HUD: a Canvas with three Image icons (each the character's own sprite) and a Text for the coins in
+the top-right, and a Slider health bar in the top-left - a **display**, so it has no handle and is not
+interactable. No HUD panel, no key hints. The hazard drains `Health`; when the bar empties a life is
+spent and the bar refills, so the whole loop lives in `Health` + `HudLives` + one bar. They rebuild that on their own
 character, and `W05Playground` is the same week's full version. A lab is the **starting point**, a playground is the **result**.
 
 **Built by.** `Assets/Editor/Wnn_Topic/WnnLabBuilder.cs` →

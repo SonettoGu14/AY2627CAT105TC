@@ -147,9 +147,15 @@ public static class UiKit
     /// <summary>
     /// A horizontal slider. uGUI drives the Fill's and the Handle's anchors itself, so the Fill is
     /// just a stretched child of the root and the Handle is a sized child.
+    ///
+    /// Pass withHandle:false for a **display** rather than a control - a health bar. It also sets
+    /// interactable:false, so the bar cannot be dragged by the mouse: the value is driven by code,
+    /// which is the whole point of the Health Bar slide. W5's own `ui_slider` demo keeps both, because
+    /// dragging it is what that slide teaches.
     /// </summary>
     public static Slider MakeSlider(Transform parent, string name, Vector2 anchor, Vector2 pos,
-                                    Vector2 size, Color fillColor)
+                                    Vector2 size, Color fillColor, bool withHandle = true,
+                                    bool interactable = true)
     {
         RectTransform rt = MakeRect(parent, name, anchor, pos, size);
         Image bg = MakeImage(rt, new Color32(0x1E, 0x24, 0x30, 0xFF), true);
@@ -157,17 +163,21 @@ public static class UiKit
         RectTransform fill = MakeStretch(rt, "Fill");
         MakeImage(fill, fillColor, false);
 
-        RectTransform handle = MakeRect(rt, "Handle", new Vector2(0f, 0.5f), Vector2.zero, new Vector2(28f, size.y + 12f));
-        Image handleImg = MakeImage(handle, Paper, true);
-
         Slider s = rt.gameObject.AddComponent<Slider>();
         s.targetGraphic = bg;
         s.fillRect = fill;
-        s.handleRect = handle;
+        if (withHandle)
+        {
+            RectTransform handle = MakeRect(rt, "Handle", new Vector2(0f, 0.5f), Vector2.zero,
+                                            new Vector2(28f, size.y + 12f));
+            MakeImage(handle, Paper, true);
+            s.handleRect = handle;
+        }
         s.direction = Slider.Direction.LeftToRight;
         s.minValue = 0f;
         s.maxValue = 1f;
         s.wholeNumbers = false;
+        s.interactable = interactable;
         return s;
     }
 

@@ -4,21 +4,34 @@ using UnityEngine.UI;
 /// <summary>
 /// W5: lives, drawn as a row of Images - each one the character's own sprite.
 ///
-/// Losing a life just switches the last visible icon off, so the whole component is one loop. At
-/// zero it refills and puts the player back at the start, which keeps the demo short enough to
-/// follow in a lab (no game-over screen, no restart button).
+/// It watches the player's Health instead of a hazard calling it directly: the bar drains while the
+/// player is being hurt, and when it empties a life is spent and the bar is handed back full. At zero
+/// lives everything refills and the player returns to the start, so the demo needs no game-over
+/// screen. That keeps the whole loop inside two components (Health + this) and one bar.
 /// </summary>
 public class HudLives : MonoBehaviour
 {
     public Image[] icons;          // left to right
     public int lives;
+    public Health health;
     public PlayerController2D player;
     public Vector2 respawnPoint = new Vector2(-7f, -0.5f);
+
+    void OnEnable() { if (health != null) health.Changed += OnHealthChanged; }
+    void OnDisable() { if (health != null) health.Changed -= OnHealthChanged; }
 
     void Start()
     {
         if (lives <= 0 || lives > icons.Length) lives = icons.Length;
         Refresh();
+    }
+
+    /// <summary>Health hit zero: spend a life, then hand the bar back full.</summary>
+    private void OnHealthChanged()
+    {
+        if (health == null || !health.IsDead) return;
+        Lose(1);
+        health.Refill();
     }
 
     public void Lose(int amount = 1)

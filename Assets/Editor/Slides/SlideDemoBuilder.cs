@@ -468,7 +468,9 @@ public static class SlideDemoBuilder
         else
         {
             RectTransform holder = UiKit.MakePanel(canvas.transform, "Health", UiKit.TopRight, new Vector2(-80f, -90f), new Vector2(560f, 200f));
-            demo.bar = UiKit.MakeSlider(holder, "Bar", UiKit.TopCenter, new Vector2(0f, -90f), new Vector2(460f, 50f), UiKit.Green);
+            demo.bar = UiKit.MakeSlider(holder, "Bar", UiKit.TopCenter, new Vector2(0f, -90f),
+                                       new Vector2(460f, 50f), UiKit.Green,
+                                       withHandle: false, interactable: false);
             demo.bar.value = 1f;
             demo.barFill = demo.bar.fillRect.GetComponent<Image>();
             demo.barLabel = UiKit.MakeText(holder, "Label", UiKit.TopCenter, new Vector2(0f, -24f), new Vector2(480f, 50f), 30f, UiKit.Paper, TextAlignmentOptions.Center);

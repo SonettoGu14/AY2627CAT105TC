@@ -11,7 +11,7 @@ The project grows one week at a time, and a week can produce **three scenes with
 
 | Scene | What it is | Audience |
 |---|---|---|
-| `Assets/Scenes/WnnLab.unity` — **Lab** | the lecture's worked example at a size a student can reproduce during the session | students, following along |
+| `Assets/Scenes/WnnLab.unity` — **Lab** | the lecture's worked example at a size a student can reproduce: a Canvas, a Slider health bar, sprite icons for lives and a coin counter | students, following along |
 | `Assets/Scenes/WnnPlayground.unity` — **Playground** | the combined result: the week's topics laid out as labelled stations and runnable | students, hands-on |
 | `Assets/Scenes/WnnSlides.unity` — **Slides** | the lecture deck at 1920×1080, with a **live demo of that slide's own content** behind each slide | instructor, presenting |
 

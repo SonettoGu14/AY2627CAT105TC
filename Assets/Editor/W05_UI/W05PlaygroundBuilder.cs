@@ -118,7 +118,9 @@ public static class W05PlaygroundBuilder
     {
         RectTransform holder = UiKit.MakePanel(ct, "Health", UiKit.TopRight, new Vector2(-40f, -40f), new Vector2(560f, 130f));
         UiKit.MakeText(holder, "Caption", UiKit.TopLeft, new Vector2(24f, -16f), new Vector2(300f, 40f), 26f, UiPalette.Muted).text = "Health";
-        Slider bar = UiKit.MakeSlider(holder, "Bar", UiKit.TopCenter, new Vector2(0f, -80f), new Vector2(500f, 44f), UiPalette.Green);
+        Slider bar = UiKit.MakeSlider(holder, "Bar", UiKit.TopCenter, new Vector2(0f, -80f),
+                                      new Vector2(500f, 44f), UiPalette.Green,
+                                      withHandle: false, interactable: false);
         TMP_Text num = UiKit.MakeText(holder, "Number", UiKit.TopRight, new Vector2(-24f, -14f), new Vector2(220f, 44f), 28f, UiPalette.Paper, TextAlignmentOptions.TopRight);
 
         HealthBarUI ui = holder.gameObject.AddComponent<HealthBarUI>();

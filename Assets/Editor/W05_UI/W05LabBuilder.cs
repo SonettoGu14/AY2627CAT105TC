@@ -33,15 +33,19 @@ public static class W05LabBuilder
 
         PlayerController2D player;
         BuildGameplay(null, out player, out Camera _);
-        HudLives lives = BuildHudUi(null, player);
 
-        // The hazard lives in the world and calls into the UI; wire the two together by name so the
-        // gameplay builder stays reusable without a UI.
+        // The one thing the week adds to the character: hit points, which the health bar draws.
+        Health health = player.gameObject.AddComponent<Health>();
+        health.max = 100;
+
+        HudLives lives = BuildHudUi(null, player, health);
+
+        // The hazard lives in the world and damages that Health; the bar and the lives react to it.
         GameObject hazard = GameObject.Find("Hazard");
         if (hazard != null)
         {
-            Hazard2D hz = hazard.GetComponent<Hazard2D>();
-            if (hz != null) hz.lives = lives;
+            DamageZone2D hz = hazard.GetComponent<DamageZone2D>();
+            if (hz != null) hz.health = health;
         }
 
         EditorSceneManager.SaveScene(scene, LabKit.W05LabPath);
@@ -112,7 +116,7 @@ public static class W05LabBuilder
         hv.layer = hazard.layer;
         hv.transform.localScale = new Vector3(1.6f, 2f, 1f);
         LabKit.AddSprite(hv, LabKit.White, new Color(0.9f, 0.25f, 0.35f, 0.5f), 1);
-        hazard.AddComponent<Hazard2D>();
+        hazard.AddComponent<DamageZone2D>();
 
         cam = W03PlaygroundBuilder.MakeFollowCamera(parent, new Vector3(-7f, 1f, -10f), 5f, player.transform);
     }
@@ -122,7 +126,7 @@ public static class W05LabBuilder
     /// sprite) for lives, and one Text for the coins. Layout rule: everything anchors to the TOP-RIGHT,
     /// where nothing else lives.
     /// </summary>
-    private static HudLives BuildHudUi(Transform parent, PlayerController2D player)
+    private static HudLives BuildHudUi(Transform parent, PlayerController2D player, Health health)
     {
         GameObject root = new GameObject("HUD");
         if (parent != null) root.transform.SetParent(parent, false);
@@ -152,8 +156,25 @@ public static class W05LabBuilder
                                         TextAlignmentOptions.TopRight);
         coins.text = "Coins  0";
 
+        // health: one Slider, TOP-LEFT - the other half of the screen from the lives and coins
+        Slider bar = UiKit.MakeSlider(ct, "HealthBar", UiKit.TopLeft,
+                                      new Vector2(40f, -32f), new Vector2(420f, 40f), UiPalette.Green,
+                                      withHandle: false, interactable: false);
+        TMP_Text numbers = UiKit.MakeText(ct, "HealthText", UiKit.TopLeft,
+                                          new Vector2(480f, -34f), new Vector2(220f, 44f), 30f,
+                                          UiPalette.Paper, TextAlignmentOptions.Left);
+        HealthBarUI barUi = bar.gameObject.AddComponent<HealthBarUI>();
+        barUi.health = health;
+        barUi.bar = bar;
+        barUi.fill = bar.fillRect.GetComponent<Image>();
+        barUi.label = numbers;
+        // so the scene already reads correctly in the Editor, before anything runs
+        bar.value = 1f;
+        numbers.text = health.max + " / " + health.max;
+
         HudLives lives = root.AddComponent<HudLives>();
         lives.icons = icons;
+        lives.health = health;
         lives.player = player;
         lives.respawnPoint = new Vector2(-7f, -0.5f);
 
