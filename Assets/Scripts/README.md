@@ -16,9 +16,9 @@ The words are literal: a **Playground** is the big combined scene, a **Lab** is 
 
 **What it is.** The scene a lab session **begins from**: the character already works and almost
 nothing else. The students are handed it and spend the session adding the week's material on top.
-Only W5 has one so far — `W05Lab` gives them the W4 character, a floor, two platforms, a follow
-camera and the HUD, and the UI layer is what they build; `W05Playground` is that same scene with the
-UI finished. A lab is the **starting point**, a playground is the **result**.
+Only W5 has one so far — `W05Lab` gives them the W4 character, a floor, two platforms and a follow
+camera, and nothing else: no coins, no goal, and **no UI at all, not even the lab HUD**. The UI layer
+is what they build; `W05Playground` is that same scene with it finished. A lab is the **starting point**, a playground is the **result**.
 
 **Built by.** `Assets/Editor/Wnn_Topic/WnnLabBuilder.cs` →
 `CAT105TC ▸ Wnn … ▸ Build Wnn Lab (Starter)`.
