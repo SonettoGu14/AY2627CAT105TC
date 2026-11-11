@@ -5,6 +5,11 @@ public class SlideView : MonoBehaviour
     public TMP_Text headerText, titleText, subtitleText, bodyText, pageText;
     public string header = "";
 
+    [Header("Demo marker")]
+    public SlideDemoMap demoMap;
+    public GameObject demoBadge;
+    public TMP_Text demoBadgeText;
+
     void OnEnable()  { if (player != null) player.Changed += Refresh; Refresh(); }
     void OnDisable() { if (player != null) player.Changed -= Refresh; }
 
@@ -19,6 +24,27 @@ public class SlideView : MonoBehaviour
         if (subtitleText!= null) subtitleText.text= s.subtitle;
         if (pageText    != null) pageText.text    = (i + 1) + " / " + player.Cursor.SlideCount;
         if (bodyText    != null) bodyText.text    = BuildBody(s);
+        RefreshDemoBadge(i);
+    }
+
+    /// <summary>The "this page has a live demo" marker. Counts the keys in the slide's demo map
+    /// entry, so a slide with three demos says "3 DEMOS" and a page with none hides the badge.</summary>
+    private void RefreshDemoBadge(int slideIndex)
+    {
+        if (demoBadge == null) return;
+        int count = DemoCount(demoMap != null ? demoMap.For(slideIndex) : "");
+        demoBadge.SetActive(count > 0);
+        if (demoBadgeText != null && count > 0)
+            demoBadgeText.text = count == 1 ? "\u2022 DEMO" : "\u2022 " + count + " DEMOS";
+    }
+
+    private static int DemoCount(string csv)
+    {
+        if (string.IsNullOrEmpty(csv)) return 0;
+        int n = 0;
+        foreach (string key in csv.Split(','))
+            if (!string.IsNullOrWhiteSpace(key)) n++;
+        return n;
     }
 
     /// <summary>The whole slide at once - every block, in order. No incremental reveal.</summary>

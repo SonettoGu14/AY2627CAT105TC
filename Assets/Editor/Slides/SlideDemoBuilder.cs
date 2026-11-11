@@ -24,7 +24,7 @@ public static class SlideDemoBuilder
     private static readonly Color Slate = new Color32(0x2A, 0x36, 0x4E, 0xFF);
     private static readonly Color Dim = new Color32(0x8F, 0xA3, 0xBF, 0xFF);
 
-    private class Spec
+    internal class Spec
     {
         public string key;
         public float orthoSize = 5f;
@@ -38,6 +38,31 @@ public static class SlideDemoBuilder
         // has never been built. Both calls are idempotent.
         LabKit.SetupSharedAssets();
         CharacterRig.EnsureDemoAssets();
+        List<Spec> specs = BuildSpecs();
+        if (withPlatformer) specs.Add(PlatformerSpec());
+        return BuildStage(parent, specs);
+    }
+
+    /// <summary>W8 is 3D: every demo brings a perspective camera, lights and its own studio set,
+    /// so the shared orthographic stage camera is never used.</summary>
+    public static DemoStage BuildW08(Transform parent)
+    {
+        LabKit.SetupSharedAssets();
+        W08Kit.SetupRenderSettings();
+        return BuildStage(parent, W08DemoBuilder.Specs());
+    }
+
+    /// <summary>W9 is audio: every demo brings its own camera AND its own AudioListener, because the
+    /// point of most of them is where the ears are relative to the sources. The shared "Demo Camera"
+    /// keeps the listener the other weeks use, and DemoStage switches it off while a W9 demo runs.</summary>
+    public static DemoStage BuildW09(Transform parent)
+    {
+        LabKit.SetupSharedAssets();
+        return BuildStage(parent, W09DemoBuilder.Specs());
+    }
+
+    private static DemoStage BuildStage(Transform parent, List<Spec> specs)
+    {
         GameObject root = LabKit.Child(parent, "Demos", Vector3.zero);
 
         // one camera for every demo that does not bring its own
@@ -54,8 +79,6 @@ public static class SlideDemoBuilder
         DemoStage stage = stageGo.AddComponent<DemoStage>();
         stage.stageCamera = stageCam;
 
-        List<Spec> specs = BuildSpecs();
-        if (withPlatformer) specs.Add(PlatformerSpec());
         List<DemoStage.Slot> slots = new List<DemoStage.Slot>();
 
         for (int i = 0; i < specs.Count; i++)

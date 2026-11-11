@@ -9,7 +9,33 @@ public class SlidePresenter : MonoBehaviour
     public string hideLabel = "Hide slides  (Tab)", showLabel = "Show slides  (Tab)";
     public bool DeckVisible { get; private set; } = true;
 
-    void Start() => SetDeckVisible(true);
+    /// <summary>W8's 3D demos compile a shader variant / update a reflection probe the first time
+    /// they appear, which can flash a placeholder colour for a frame. Warm every demo once behind
+    /// the opaque deck so the first real activation is already compiled.</summary>
+    public bool warmupDemos;
+
+    void Start()
+    {
+        SetDeckVisible(true);
+        if (warmupDemos) StartCoroutine(Warmup());
+    }
+
+    private System.Collections.IEnumerator Warmup()
+    {
+        if (demoStage == null || demoStage.slots == null) yield break;
+        foreach (DemoStage.Slot slot in demoStage.slots)
+        {
+            if (!DeckVisible) yield break;
+            if (slot == null || slot.root == null) continue;
+            slot.root.SetActive(true);
+            DemoBase demo = slot.root.GetComponentInChildren<DemoBase>(true);
+            if (demo != null) demo.OnActivate();
+            yield return null;
+            if (demo != null) demo.OnDeactivate();
+            slot.root.SetActive(false);
+            if (slot.camera != null) slot.camera.gameObject.SetActive(false);
+        }
+    }
 
     public void Toggle() => SetDeckVisible(!DeckVisible);
 

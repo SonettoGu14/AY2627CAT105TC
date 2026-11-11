@@ -44,10 +44,32 @@ public static class SlideDeckBuilder
                        "CAT105TC  \u00b7  Week 05  \u00b7  UI", false);
     }
 
-    public static void BuildDeckScene(string deckJsonPath, string scenePath, string header, bool withGameplay)
+    [MenuItem("CAT105TC/Slides/Build W08Slides")]
+    public static void BuildW08Slides()
+    {
+        BuildDeckScene("Assets/Slides/W08_L8.json", "Assets/Scenes/W08Slides.unity",
+                       "CAT105TC  \u00b7  Week 08  \u00b7  3D Rendering and Materials", false, DemoSet.W08);
+    }
+
+    [MenuItem("CAT105TC/Slides/Build W09Slides")]
+    public static void BuildW09Slides()
+    {
+        BuildDeckScene("Assets/Slides/W09_L9.json", "Assets/Scenes/W09Slides.unity",
+                       "CAT105TC  \u00b7  Week 09  \u00b7  Audio System", false, DemoSet.W09);
+    }
+
+    /// <summary>Which demo stage the deck sits in front of. Adding a week means adding a case here.</summary>
+    public enum DemoSet
+    {
+        W04W05,     // the 2D demos (44 of them), optional platformer "put it together" demo
+        W08,        // 3D rendering: own perspective camera, studio lighting
+        W09         // audio: own camera and own AudioListener per demo
+    }
+
+    public static void BuildDeckScene(string deckJsonPath, string scenePath, string header, bool withGameplay, DemoSet demos = DemoSet.W04W05)
     {
         // TMP essentials import asynchronously on a fresh clone; finish the build once ready.
-        if (!TmpBootstrap.Ensure(() => BuildDeckScene(deckJsonPath, scenePath, header, withGameplay))) return;
+        if (!TmpBootstrap.Ensure(() => BuildDeckScene(deckJsonPath, scenePath, header, withGameplay, demos))) return;
 
         TextAsset deck = AssetDatabase.LoadAssetAtPath<TextAsset>(deckJsonPath);
         if (deck == null)
@@ -62,7 +84,13 @@ public static class SlideDeckBuilder
         WarnAboutUnrenderedContent(deck);
 
         // --- the demos that appear behind the deck, one stage each ----------------------
-        DemoStage demoStage = SlideDemoBuilder.Build(null, withGameplay);
+        DemoStage demoStage;
+        switch (demos)
+        {
+            case DemoSet.W08: demoStage = SlideDemoBuilder.BuildW08(null); break;
+            case DemoSet.W09: demoStage = SlideDemoBuilder.BuildW09(null); break;
+            default:          demoStage = SlideDemoBuilder.Build(null, withGameplay); break;
+        }
 
         // --- the deck canvas -----------------------------------------------------------
         GameObject canvasGo = new GameObject("Slides Canvas",
@@ -111,6 +139,13 @@ public static class SlideDeckBuilder
 
         view.pageText = pageLabel;
 
+        // The "this page has a live demo" marker. SlideView fills it from the demo map.
+        Image demoBadgeBg = UiImage(root, "DemoBadge", bottomRight,
+            new Vector2(-300f, 92f), new Vector2(190f, 42f), AccentColor);
+        TMP_Text demoBadgeText = TmpText(demoBadgeBg.transform, "Label", new Vector2(0.5f, 0.5f), Vector2.zero,
+            new Vector2(190f, 42f), 21f, BgColor, TextAlignmentOptions.Center);
+        demoBadgeBg.gameObject.SetActive(false);
+
         SlideNavigator navigator = canvasGo.AddComponent<SlideNavigator>();
         navigator.player = player;
         navigator.nextButton = nextButton;
@@ -123,6 +158,10 @@ public static class SlideDeckBuilder
 
         // --- which demos belong to which slide -----------------------------------------
         SlideDemoMap demoMap = canvasGo.AddComponent<SlideDemoMap>();
+        view.demoMap = demoMap;
+        view.demoBadge = demoBadgeBg.gameObject;
+        view.demoBadgeText = demoBadgeText;
+        navigator.demoMap = demoMap;
         string mapPath = deckJsonPath.Substring(0, deckJsonPath.Length - ".json".Length) + ".demos.json";
         TextAsset mapAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(mapPath);
         if (mapAsset != null)
@@ -157,6 +196,9 @@ public static class SlideDeckBuilder
         presenter.demoStage = demoStage;
         presenter.demoMap = demoMap;
         presenter.toggleLabel = toggleLabel;
+        // W8's 3D demos compile on first activation, so warming them behind the deck hides the hitch.
+        // W9 must NOT be warmed up: it would activate 17 audio demos for a frame and every source would blip.
+        presenter.warmupDemos = demos == DemoSet.W08;
         toggleLabel.text = presenter.hideLabel;
         UnityEditor.Events.UnityEventTools.AddPersistentListener(toggleButton.onClick, presenter.Toggle);
 

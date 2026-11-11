@@ -57,8 +57,10 @@ public static class DemoKit
     {
         Visual(parent, name + "Track", LabKit.White, new Color32(0x1E, 0x24, 0x30, 0xFF),
                new Vector2(0f, 0f), new Vector2(width, 0.5f), 1);
+        // The fill is a thin strip inset inside the track (0.32 of the 0.5 tall track). Anything
+        // that rescales this fill must keep the same height - see W09Kit.Fill / AudioDemoUi.Fill.
         GameObject bar = Visual(parent, name + "Fill", LabKit.White, fillColor,
-                                new Vector2(-width * 0.5f, 0f), new Vector2(0.1f, 1.1f), 2);
+                                new Vector2(-width * 0.5f, 0f), new Vector2(0.1f, 0.32f), 2);
         fill = bar.transform;
         fillSprite = bar.GetComponent<SpriteRenderer>();
         return bar;

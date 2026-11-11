@@ -19,14 +19,18 @@ without switching applications.
 | `SlideNavigator.cs` | prev/next buttons, page label, jump-to-slide grid |
 | `Assets/Editor/Slides/TmpBootstrap.cs` | imports TMP Essential Resources once (async-safe) |
 | `Assets/Editor/Slides/SlideDeckBuilder.cs` | deck JSON → scene |
-| `Assets/Tests/EditMode/` | `SlideCursorTests` (10) + `DeckLoadTests` (4) |
+| `Assets/Tests/EditMode/` | `SlideCursorTests` (10) + `DeckLoadTests` (11) |
 | `Assets/Tests/PlayMode/` | `SlidePresenterPlayTests` (3) — the presenter ↔ demo contract |
 | `Assets/Slides/<key>.json` | a generated deck |
-| `Assets/Scenes/W04Slides.unity`, `W05Slides.unity` | generated scenes |
+| `Assets/Scenes/W04Slides.unity`, `W05Slides.unity`, `W08Slides.unity` | generated scenes |
 | `Demos/UiDemo.cs` | the W5 UI components (16 modes) |
 | `Demos/MathfDemo.cs` | W5 Mathf / Lerp (4 modes) |
 | `Demos/SpawnDemo.cs` | W5 prefab / Instantiate / Destroy (3 modes) |
 | `Demos/WidgetDemo.cs` | W5 dialogue box + health bar, with `UiPointerProbe` |
+| `Demos/W08/*.cs` | W8: mesh anatomy/normals, UVs, shader swap, shared material, PBR, lights, shadows, studio |
+| `Assets/Editor/Slides/W08Kit.cs` | 3D furniture: generated textures, URP materials, softboxes, probe, lights |
+| `Assets/Editor/Slides/W08DemoBuilder.cs` | the W8 demo list and its 3D sets |
+| `Assets/Art/W08Materials/` | generated textures/materials the W8 scene references |
 | `Assets/Editor/Slides/UiKit.cs` | the UI furniture (canvas, panel, button, slider, mask, group) |
 | `UiPalette.cs` | the shared UI colours (runtime, so the demos can use them) |
 
@@ -48,13 +52,18 @@ While the deck is up the game is **frozen** (`Time.timeScale = 0`), so `Space` c
 the deck and jump the character. The top-right button on the Chrome Canvas does exactly what `Tab`
 does, and stays clickable while the deck is hidden.
 
+**A slide with a live demo is marked in two places.** The deck shows a blue `• DEMO` (`• 3 DEMOS`
+for several demos) above the page counter, and the jump-to-slide grid puts a dot in the corner of
+every cell whose slide has one. Both read the same `<deck>.demos.json` map the presenter uses, so
+the marker cannot drift from the actual demo list.
+
 ## Regenerating
 
 The deck JSON (`Assets/Slides/<key>.json`) is produced from the course `.pptx` by a converter that
 is **not part of this repository** — it is the lecturer's own tooling.
 
 ```bash
-# deck JSON -> scene:  menu  CAT105TC ▸ Slides ▸ Build W04Slides
+# deck JSON -> scene:  menu  CAT105TC ▸ Slides ▸ Build W04Slides / W05Slides / W08Slides
 ```
 
 **Rule: edit the `.pptx` (or the generated JSON), never the scene by hand.** The builder rebuilds
@@ -62,9 +71,10 @@ the scene from scratch every time, so hand edits are lost.
 
 ## Adding another week
 
-1. Run the converter for that `.pptx` (W04 and W05 are converted so far).
-2. Add a menu item beside `BuildW05Slides`:
-   `[MenuItem("CAT105TC/Slides/Build W05Slides")]` → `BuildDeckScene(json, scene, header, true)`.
+1. Run the converter for that `.pptx` (W04, W05 and W08 are converted so far).
+2. Add a menu item beside `BuildW08Slides`:
+   `[MenuItem("CAT105TC/Slides/Build W08Slides")]` → `BuildDeckScene(json, scene, header, false, true)`,
+   where the last flag selects the 3D demo builder instead of the 2D one.
 3. Run it — it rebuilds the scene and adds it to Build Settings.
 
 Two caveats:
@@ -99,8 +109,8 @@ pins that, so the bar does not come back.
 
 | Where | What it covers |
 |---|---|
-| `Assets/Tests/EditMode/` | `SlideCursorTests` (10) — the paging state machine; `DeckLoadTests` (8) — both decks' contracts and the demo maps |
-| `Assets/Tests/PlayMode/` | `SlidePresenterPlayTests` (3) — the presenter ↔ demo contract; `W05SlidesPlayTests` (1) — every key in the W5 demo map activating in the built scene |
+| `Assets/Tests/EditMode/` | `SlideCursorTests` (10) — the paging state machine; `DeckLoadTests` (11) — every deck's contract and demo map |
+| `Assets/Tests/PlayMode/` | `SlidePresenterPlayTests` (3) — the presenter ↔ demo contract; `W05SlidesPlayTests` / `W08SlidesPlayTests` (2) — every key in a deck's demo map activating in the built scene |
 
 The runtime lives in its own `Slides.Runtime` assembly and the pure logic in a separate engine-free
 `Slides.Core` one, precisely so those test assemblies can reference them (a test asmdef cannot see
@@ -116,4 +126,6 @@ deck is up, so no `Update()` can run on them — rather than the controller itse
 `Assets/Editor/Slides/DemoKit.cs` holds the furniture every demo is built from: `Visual`, `Character`,
 `Floor`, `Line`, `Bar`, `OwnCamera`, `CameraKit`, plus the shared palette. A new demo is usually:
 a `DemoBase` subclass in `Demos/` (one concept, with `Title` / `Keys` / `Readout`), a `Spec` in
-`SlideDemoBuilder.BuildSpecs()`, and an entry in `<deck>.demos.json`.
+`SlideDemoBuilder.BuildSpecs()` (2D) or `W08DemoBuilder.Specs()` (3D), and an entry in
+`<deck>.demos.json`. 3D demos bring their own perspective camera and lights; `W08Kit` has the
+primitives, materials, softboxes and reflection probe.

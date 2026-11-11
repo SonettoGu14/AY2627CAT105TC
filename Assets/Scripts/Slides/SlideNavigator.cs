@@ -20,6 +20,7 @@ public class SlideNavigator : MonoBehaviour
     public Button prevButton;      // on-click -> PrevClicked()
     public TMP_Text pageLabel;     // "12 / 28"
     public GameObject jumpPanel;   // centred 1400x820 panel, starts inactive
+    public SlideDemoMap demoMap;   // marks cells whose slide has a live demo
 
     public bool JumpPanelOpen { get; private set; }
 
@@ -84,7 +85,8 @@ public class SlideNavigator : MonoBehaviour
     void RefreshHeader()
     {
         if (_header == null || player == null || player.Cursor == null) return;
-        _header.text = "Jump to slide   (" + (player.SlideIndex + 1) + " / " + player.Cursor.SlideCount + ")";
+        _header.text = "Jump to slide   (" + (player.SlideIndex + 1) + " / " + player.Cursor.SlideCount + ")" +
+                       "     \u2022 = demo";
     }
 
     // ------------------------------------------------------------------ grid
@@ -147,6 +149,20 @@ public class SlideNavigator : MonoBehaviour
         lr.anchorMin = Vector2.zero; lr.anchorMax = Vector2.one;
         lr.offsetMin = Vector2.zero; lr.offsetMax = Vector2.zero;
         label.text = (index + 1).ToString();
+
+        // A dot in the corner is the grid's version of the page badge: this slide has a live demo.
+        if (demoMap != null && !string.IsNullOrEmpty(demoMap.For(index)))
+        {
+            GameObject dot = new GameObject("DemoDot", typeof(RectTransform), typeof(Image));
+            RectTransform dr = (RectTransform)dot.transform;
+            dr.SetParent(rt, false);
+            dr.anchorMin = dr.anchorMax = dr.pivot = new Vector2(1f, 1f);
+            dr.anchoredPosition = new Vector2(-9f, -9f);
+            dr.sizeDelta = new Vector2(9f, 9f);
+            Image di = dot.GetComponent<Image>();
+            di.color = CurrentColor;
+            di.raycastTarget = false;
+        }
 
         int target = index;
         // Runtime-only object -> a runtime listener is the only option here.
