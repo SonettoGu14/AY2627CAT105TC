@@ -1,0 +1,422 @@
+{
+  "key": "W09_L9",
+  "title": "Audio System",
+  "subtitle": "Lecture 9\nSound is half the experience — judge it by ear.",
+  "source": "W9 - L9 - Audio System.pptx",
+  "generated": "2026-11-11T10:33:32",
+  "slides": [
+    {
+      "index": 1,
+      "layout": "title",
+      "title": "Audio System",
+      "subtitle": "Lecture 9\nSound is half the experience — judge it by ear.",
+      "blocks": [],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 2,
+      "layout": "content",
+      "title": "Agenda",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Why sound matters",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Clip → Source → Listener → Mixer",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Play vs PlayOneShot",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "2D vs 3D: Spatial Blend and distance",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "AudioMixer: groups and routing",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Where audio goes wrong",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 3,
+      "layout": "content",
+      "title": "Why Sound Matters",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "A scene can look right and still feel dead.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Sound tells the player where things are, what just happened, and how dangerous it is.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Today is not a tour of every audio property.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "It is four decisions: 2D or 3D, Play or PlayOneShot, which mixer group, and how far the sound carries.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "In the lab you will walk around a small scene and hear the difference.",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 4,
+      "layout": "content",
+      "title": "The Audio Map",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Four pieces, one path:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "AudioClip — the sound file",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "AudioSource — the component that plays it",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "AudioListener — the ears; one per scene, usually on the Main Camera",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "AudioMixer — the routing board that controls groups and effects",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Clip → Source → Listener: the sound travels through 3D space",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Source → Mixer → Master: the volume and effects are applied",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 5,
+      "layout": "content",
+      "title": "Play vs PlayOneShot",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Play() replaces the current clip on that source — one sound at a time. PlayOneShot(clip) layers the clip on top — many overlapping sounds from one source.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Use Play for music and loops; use PlayOneShot for footsteps, gunshots, and pickups.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Randomise pitch slightly on repeated one-shots, or they sound like a machine gun.",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 6,
+      "layout": "content",
+      "title": "2D vs 3D: Spatial Blend and Distance",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Spatial Blend 0 — 2D: same volume everywhere; use for UI, music, narration",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Spatial Blend 1 — 3D: volume and pan depend on the listener's position; use for footsteps, ambience, in-world effects",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Min Distance — inside this radius the source is at full volume",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Max Distance — beyond this radius it is silent",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Rolloff — how fast it fades between the two; Logarithmic feels natural",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Footstep: Min 1, Max 15. Campfire: Min 2, Max 30.",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 7,
+      "layout": "title",
+      "title": "Worked Example: A Footstep Manager",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "public AudioClip[] clips;",
+          "kind": "code"
+        },
+        {
+          "level": 0,
+          "text": "public AudioSource source;",
+          "kind": "code"
+        },
+        {
+          "level": 0,
+          "text": "private float nextStep;",
+          "kind": "code"
+        },
+        {
+          "level": 0,
+          "text": " ",
+          "kind": "code"
+        },
+        {
+          "level": 0,
+          "text": "void Update()",
+          "kind": "code"
+        },
+        {
+          "level": 0,
+          "text": "{",
+          "kind": "code"
+        },
+        {
+          "level": 0,
+          "text": "    bool moving = Mathf.Abs(Input.GetAxisRaw(\"Horizontal\")) > 0.1f",
+          "kind": "code"
+        },
+        {
+          "level": 0,
+          "text": "               || Mathf.Abs(Input.GetAxisRaw(\"Vertical\")) > 0.1f;",
+          "kind": "code"
+        },
+        {
+          "level": 0,
+          "text": "    if (moving && Time.time >= nextStep)",
+          "kind": "code"
+        },
+        {
+          "level": 0,
+          "text": "    {",
+          "kind": "code"
+        },
+        {
+          "level": 0,
+          "text": "        source.pitch = Random.Range(0.9f, 1.1f);",
+          "kind": "code"
+        },
+        {
+          "level": 0,
+          "text": "        source.PlayOneShot(clips[Random.Range(0, clips.Length)]);",
+          "kind": "code"
+        },
+        {
+          "level": 0,
+          "text": "        nextStep = Time.time + 0.4f;",
+          "kind": "code"
+        },
+        {
+          "level": 0,
+          "text": "    }",
+          "kind": "code"
+        },
+        {
+          "level": 0,
+          "text": "}",
+          "kind": "code"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 8,
+      "layout": "content",
+      "title": "The AudioMixer: Groups and Routing",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "An AudioMixer is a tree: Master → BGM / SFX → sub-groups",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Each group has volume in dB, pitch, and an effects chain",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "A source routes to a group through its Output field",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "If Output is None, the source bypasses the mixer — sliders and effects do nothing",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Expose a group volume to script and drive it from a settings slider",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "One SFX slider lowers every footstep and gunshot at once",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 9,
+      "layout": "content",
+      "title": "Where Audio Goes Wrong",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Check these before asking for help:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "I hear nothing — no AudioListener, volume 0, or a missing clip",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "3D source is silent right next to it — Min Distance is too large; you are inside the \"silent\" zone",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Changing the mixer slider does nothing — the source's Output is still None",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Footsteps sound like a machine gun — no throttle, or Play instead of PlayOneShot",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Crackling — too many overlapping one-shots; lower the volume or add a Compressor",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 10,
+      "layout": "content",
+      "title": "Lab Brief and Summary",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Four decisions, one scene.",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "2D or 3D — choose the role",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Play or PlayOneShot — choose the channel",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Which mixer group — choose the category",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "How far it carries — Min/Max Distance",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Lab: three 3D sources, one BGM source, an AudioMixer, and a footsteps script. Walk around and listen.",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Next week: VFX — the same \"make it, then judge it\" workflow, with your eyes.",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 11,
+      "layout": "title",
+      "title": "The End",
+      "subtitle": "Lecture 9",
+      "blocks": [],
+      "table": null,
+      "image": null
+    }
+  ]
+}

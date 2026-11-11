@@ -1,0 +1,15 @@
+{
+  "perSlide": [
+    "",
+    "",
+    "why_sound",
+    "audio_map",
+    "play_replace,oneshot_layer,pitch_vary",
+    "spatial_blend,min_max,rolloff",
+    "footsteps",
+    "mixer_groups,mixer_bypass",
+    "bug_no_listener,bug_min_distance,bug_output_none,bug_machine_gun,bug_crackling",
+    "walkaround",
+    ""
+  ]
+}
