@@ -1,0 +1,19 @@
+{
+  "perSlide": [
+    "",
+    "",
+    "",
+    "mesh_anatomy",
+    "mesh_normals",
+    "uv_map",
+    "mat_shader,mat_shared",
+    "pbr_metallic,pbr_smoothness,pbr_normalmap",
+    "pbr_three",
+    "mat_shader,pbr_normalmap,bug_smoothness,bug_albedo",
+    "light_directional,light_point,light_spot",
+    "shadow_realtime",
+    "studio",
+    "",
+    ""
+  ]
+}

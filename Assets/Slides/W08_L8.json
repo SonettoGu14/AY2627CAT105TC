@@ -1,0 +1,545 @@
+{
+  "key": "W08_L8",
+  "title": "3D Rendering and Materials",
+  "subtitle": "Lecture 8\nFrom points to polygons to surfaces.",
+  "source": "W8 - L8 - 3D Rendering and Materials.pptx",
+  "generated": "2026-11-04T15:43:03",
+  "slides": [
+    {
+      "index": 1,
+      "layout": "title",
+      "title": "3D Rendering and Materials",
+      "subtitle": "Lecture 8\nFrom points to polygons to surfaces.",
+      "blocks": [],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 2,
+      "layout": "content",
+      "title": "Agenda",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Where rendering fits",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "What a mesh is: vertices, edges, faces",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "UVs and materials",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "PBR: the three judgments",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Lights and shadows",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "What the lab will build",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 3,
+      "layout": "content",
+      "title": "Where W8 Fits",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "A rendered frame is the end of a chain: mesh defines the shape, material defines how light interacts with the surface, lights define where the light comes from, and the camera decides what you see.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "This week is about the first three.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "The lab will put them together in one small studio, but today is the theory that lets you judge whether the result looks right.",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 4,
+      "layout": "content",
+      "title": "What Is a Mesh? Vertices, Edges, and Faces",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "A mesh is a collection of connected geometry:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "A vertex (plural: vertices) is a point in 3D space",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "An edge is a line between two vertices",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "A face is a closed loop of edges; in real-time rendering it is almost always a triangle",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "A polygon is a face with more than three sides; the GPU splits it into triangles before drawing",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "The wireframe view shows edges and faces without materials \u2014 it is how you inspect the structure",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "A cube has 8 corners but 24 vertices in Unity, because each face needs its own normal and UV data",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": {
+        "path": "W08_L8/img_04.png",
+        "w": 532,
+        "h": 299
+      }
+    },
+    {
+      "index": 5,
+      "layout": "content",
+      "title": "Triangles and Normals",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Triangles are the GPU's native primitive:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Every quad, polygon, or imported model is triangulated before rendering",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "A normal is the direction a face points; it tells the light how to shade the surface",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Flat shading uses one normal per face \u2014 hard edges",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Smooth shading shares averaged normals across vertices \u2014 soft, rounded edges",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "If a model looks faceted when it should be smooth, the normals are the first thing to check",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "You do not need to memorise vertex counts; you need to know that geometry and normals are separate data",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 6,
+      "layout": "content",
+      "title": "UV Mapping",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "A UV is a 2D coordinate that maps a texture onto a 3D surface:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "U is horizontal, V is vertical; the range is normally 0 to 1",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Each vertex stores a UV coordinate, so the texture knows which part of the image belongs to which triangle",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Tiling repeats the texture; offset shifts it; seams appear where UV islands are cut apart",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "A UV map is the bridge between a flat image and a curved surface",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "If a texture looks stretched or upside down, the UVs \u2014 not the material \u2014 are usually the cause",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": {
+        "path": "W08_L8/img_04.png",
+        "w": 532,
+        "h": 299
+      }
+    },
+    {
+      "index": 7,
+      "layout": "content",
+      "title": "Material = Shader + Parameters",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "A Material is an asset that binds a shader and its parameter values:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "The shader is the recipe \u2014 it decides how the surface responds to light",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "The parameters are the ingredients \u2014 colour, metallic, smoothness, textures",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "The MeshRenderer holds a reference to the material and draws it",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Several objects can share one material; changing the asset updates all of them",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "A per-renderer override is possible, but start with shared materials",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "In URP, use URP/Lit; the Built-in Standard shader in a URP project turns materials pink",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 8,
+      "layout": "content",
+      "title": "PBR: Albedo, Metallic, Smoothness",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Most \"ugly materials\" come from three PBR values:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Albedo (base colour) \u2014 the surface colour, not a paint layer; use a real reference",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Metallic \u2014 0 for wood, plastic, glass, skin; 1 for metal. Do not use 0.5 unless you know why",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Smoothness \u2014 0 is matte, 1 is a mirror; a dielectric with high smoothness looks like plastic",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Normal map \u2014 a texture that adds surface detail without adding geometry; it must be imported as Normal map, not Default",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "For metals, albedo is the reflection tint: gold is yellow, copper is orange, silver is white",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "If a surface looks wrong, check these four before anything else",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 9,
+      "layout": "content",
+      "title": "Reference: Three Materials",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "These are the three materials the lab will build. Read them as expected results, not as a live build:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Metal \u2014 metallic 1, smoothness 0.9, albedo #888888; a sharp highlight that takes the light's colour",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Wood \u2014 metallic 0, smoothness 0.2, albedo #8B5A2B; a broad, soft highlight and a matte surface",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Glass \u2014 metallic 0, smoothness 1, Surface Type Transparent, alpha 0.3; the background shows through",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "All three sit under the same directional light; the same light produces three different surfaces",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "When you build them in the lab, change one slider at a time and compare against this reference",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 10,
+      "layout": "content",
+      "title": "Where Materials Go Wrong",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Four failures to recognise on sight:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Normal map imported as Default \u2014 the surface looks flat from the side; set Texture Type to Normal map",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Smoothness too high on wood \u2014 everything looks wet or plastic; lower it to 0.2\u20130.3",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Built-in Standard shader in a URP project \u2014 the material turns pink; recreate it with URP/Lit",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Albedo used as paint on a metal \u2014 the metal looks dull and off-colour; use the real metal colour",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "AI can suggest a value, but it cannot see the result. The check is visual, in Play Mode",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 11,
+      "layout": "content",
+      "title": "Three Light Types",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Directional \u2014 parallel rays, like the sun.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "No position, only rotation and colour; affects the whole scene. Point \u2014 a bulb.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Has position, range, colour; falls off with distance. Spot \u2014 a flashlight.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Has position, direction, angle, range; falls off with distance and angle.",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Use soft shadows on the directional, and turn shadows off on point and spot lights unless you need them.",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 12,
+      "layout": "content",
+      "title": "Shadows: Realtime, Baked, Mixed",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "Realtime \u2014 rendered every frame; needed for moving lights and objects; expensive",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Baked \u2014 pre-computed into a lightmap; static objects only; free at runtime",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Mixed \u2014 dynamic objects cast realtime shadows into baked areas",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "The light's Mode setting chooses Realtime, Baked, or Mixed",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "If a light or its objects never move, bake it \u2014 it saves GPU and often looks better",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 13,
+      "layout": "content",
+      "title": "Lab Preview: The Tiny Studio",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "In the lab you will build one scene, Lab8_MaterialsLights:",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "A metal cube, a wood sphere, and a glass capsule",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "One Directional, one Point, and one Spot light",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "You will author each material by hand, verify it in Play Mode, and compare the three falloff behaviours",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "You will also debug a broken scene with four hidden material/lighting bugs",
+          "kind": "bullet"
+        },
+        {
+          "level": 1,
+          "text": "Nothing is submitted after class \u2014 you will demo the finished scene to your neighbour and the TA in the room",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 14,
+      "layout": "content",
+      "title": "Summary",
+      "subtitle": "",
+      "blocks": [
+        {
+          "level": 0,
+          "text": "A mesh is vertices, edges, and faces; triangles are the GPU's native primitive",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Normals control shading; UVs map a 2D texture onto a 3D surface",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "A material binds a shader and parameters; PBR is albedo, metallic, and smoothness",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Directional, Point, and Spot lights have different falloff; bake static lights",
+          "kind": "bullet"
+        },
+        {
+          "level": 0,
+          "text": "Next week: audio \u2014 the same \"make it, then judge it by ear\" workflow",
+          "kind": "bullet"
+        }
+      ],
+      "table": null,
+      "image": null
+    },
+    {
+      "index": 15,
+      "layout": "title",
+      "title": "The End",
+      "subtitle": "Lecture 8",
+      "blocks": [],
+      "table": null,
+      "image": null
+    }
+  ]
+}
